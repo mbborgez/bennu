@@ -3,9 +3,12 @@ package org.fenixedu.bennu.portal.servlet;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
@@ -29,6 +32,10 @@ public class PortalInitializer implements ServletContextListener {
             }
         }
         logger.info("Available Themes : " + Arrays.toString(themes.toArray()));
+
+        // Install Bennu Portal Dispatcher
+        FilterRegistration registration = sce.getServletContext().addFilter("BennuPortalDispatcher", BennuPortalDispatcher.class);
+        registration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
     }
 
     @Override

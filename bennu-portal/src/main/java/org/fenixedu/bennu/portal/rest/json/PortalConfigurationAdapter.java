@@ -5,11 +5,8 @@ import org.fenixedu.bennu.core.json.JsonBuilder;
 import org.fenixedu.bennu.core.json.JsonUpdater;
 import org.fenixedu.bennu.core.json.JsonViewer;
 import org.fenixedu.bennu.core.json.adapters.DomainObjectViewer;
-import org.fenixedu.bennu.portal.domain.MenuItem;
 import org.fenixedu.bennu.portal.domain.PortalConfiguration;
 import org.fenixedu.commons.i18n.LocalizedString;
-
-import pt.ist.fenixframework.FenixFramework;
 
 import com.google.common.io.BaseEncoding;
 import com.google.gson.JsonElement;
@@ -65,16 +62,6 @@ public class PortalConfigurationAdapter implements JsonViewer<PortalConfiguratio
         }
         if (object.has("logoType")) {
             configuration.setLogoType(object.get("logoType").getAsString());
-        }
-        if (object.has("menu")) {
-            final JsonObject menuObj = object.get("menu").getAsJsonObject();
-            if (menuObj.has("id")) {
-                final String menuExternalId = menuObj.get("id").getAsString();
-                MenuItem menu = FenixFramework.getDomainObject(menuExternalId);
-                if (!menu.equals(configuration.getMenu())) {
-                    configuration.setMenu(menu);
-                }
-            }
         }
         return configuration;
     }
