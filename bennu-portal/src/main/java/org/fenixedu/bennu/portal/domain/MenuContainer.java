@@ -151,6 +151,16 @@ public final class MenuContainer extends MenuContainer_Base {
         return getConfiguration() != null;
     }
 
+    public String resolveLayout() {
+        if (getConfiguration() != null) {
+            return "default";
+        }
+        if (getLayout() != null) {
+            return getLayout();
+        }
+        return getParent().resolveLayout();
+    }
+
     /**
      * Traverses the functionality tree looking for the branch that matches the given path.
      * Lookup starts with the children of the current Container.

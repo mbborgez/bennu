@@ -28,6 +28,7 @@ public class MenuItem {
 	protected String path (REQUIRED);
 	protected String fullPath (REQUIRED);
 	protected Boolean visible (REQUIRED);
+	public String layout;
 }
 
 public class MenuContainer extends MenuItem {

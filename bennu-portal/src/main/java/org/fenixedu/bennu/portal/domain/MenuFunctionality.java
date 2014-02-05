@@ -60,6 +60,13 @@ public final class MenuFunctionality extends MenuFunctionality_Base {
         return findFunctionality(PortalConfiguration.getInstance().getMenu(), provider, key);
     }
 
+    public String resolveLayout() {
+        if (getLayout() != null) {
+            return getLayout();
+        }
+        return getParent().resolveLayout();
+    }
+
     @Override
     public String getProvider() {
         //FIXME: remove when the framework enables read-only slots
