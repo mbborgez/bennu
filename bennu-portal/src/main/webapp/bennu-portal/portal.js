@@ -51,13 +51,16 @@
                     var langs = this.locales;
                     model['_mls'] = function() {
                         return function(val) {
-                            if (this[val]) {
-                                if (this[val][completeLanguage]) {
-                                    return this[val][completeLanguage];
+                        	if(typeof val === "string") {
+                        		val = this[val];
+                        	}
+                            if (val) {
+                                if (val[completeLanguage]) {
+                                    return val[completeLanguage];
                                 }
                                 currentLanguage = BennuPortal.lang;
-                                if (this[val][currentLanguage]) {
-                                    return this[val][currentLanguage];
+                                if (val[currentLanguage]) {
+                                    return val[currentLanguage];
                                 }
                                 
                                 //search for other specific currentLanguage
@@ -69,8 +72,8 @@
                                         return false;
                                     }
                                 });
-                                if (fallbackLanguage != undefined && this[val][fallbackLanguage] != undefined) {
-                                    return this[val][fallbackLanguage];
+                                if (fallbackLanguage != undefined && val[fallbackLanguage] != undefined) {
+                                    return val[fallbackLanguage];
                                 }
                             }
                             return "_mls!!" + val + "!!";
@@ -117,16 +120,6 @@
 				url: theme_messages_url,
 				dataType: "json",
 				success: function(messagesJson, status, response) {
-					hostJson["_i18n"] = function() {
-						return function(val) {
-	                        val = Mustache.to_html(val, this);
-							if (messagesJson[val]) {
-								return messagesJson[val];
-							} else {
-								return "_i18n!!" + BennuPortal.lang + "!!" + val + "!!";
-							}
-						}
-					}
 					$.ajaxSetup({ cache: true });
 					$.ajax({
 						type: "GET",
@@ -140,8 +133,19 @@
 								if (jsonHandler) {
 									hostJson = jsonHandler(hostJson);
 								}
-								var new_body = Mustache.to_html(layoutTemplate,
-								hostJson);
+								Twig.extendFilter('i18n', function(val) {
+									if(messagesJson[val]) {
+										return messagesJson[val];
+									} else {
+										return "_i18n!!" + BennuPortal.lang + "!!" + val + "!!";
+									}
+									return messagesJson[value];
+								});
+								Twig.extendFilter('mls', function (val) {
+									return hostJson._mls()(val);
+								});
+								var template = twig({ id: 'list', data: layoutTemplate });
+								var new_body = template.render(hostJson);
 								$('body').append(new_body);
 								$("#portal-container").appendTo("#content");
 								$('body').show();
