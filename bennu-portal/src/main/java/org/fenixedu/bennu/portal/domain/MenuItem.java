@@ -133,24 +133,6 @@ public abstract class MenuItem extends MenuItem_Base implements Comparable<MenuI
         return super.getFullPath();
     }
 
-    @Override
-    public LocalizedString getTitle() {
-        //FIXME: remove when the framework enables read-only slots
-        return super.getTitle();
-    }
-
-    @Override
-    public LocalizedString getDescription() {
-        //FIXME: remove when the framework enables read-only slots
-        return super.getDescription();
-    }
-
-    @Override
-    public Group getAccessGroup() {
-        //FIXME: remove when the framework enables read-only slots
-        return super.getAccessGroup();
-    }
-
     public boolean isMenuContainer() {
         return this instanceof MenuContainer;
     }

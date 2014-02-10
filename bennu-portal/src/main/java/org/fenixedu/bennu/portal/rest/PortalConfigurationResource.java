@@ -17,6 +17,7 @@ public class PortalConfigurationResource extends BennuRestResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String viewConfig() {
+        accessControl("#managers");
         return view(PortalConfiguration.getInstance());
     }
 

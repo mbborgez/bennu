@@ -6,11 +6,14 @@ import org.fenixedu.bennu.core.json.JsonUpdater;
 import org.fenixedu.bennu.core.json.JsonViewer;
 import org.fenixedu.bennu.core.json.adapters.DomainObjectViewer;
 import org.fenixedu.bennu.portal.domain.PortalConfiguration;
+import org.fenixedu.bennu.portal.servlet.PortalInitializer;
 import org.fenixedu.commons.i18n.LocalizedString;
 
 import com.google.common.io.BaseEncoding;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 @DefaultJsonAdapter(PortalConfiguration.class)
 public class PortalConfigurationAdapter implements JsonViewer<PortalConfiguration>, JsonUpdater<PortalConfiguration> {
@@ -29,6 +32,11 @@ public class PortalConfigurationAdapter implements JsonViewer<PortalConfiguratio
             object.addProperty("logo", BaseEncoding.base64().encode(configuration.getLogo()));
             object.addProperty("logoType", new String(configuration.getLogoType()));
         }
+        JsonArray themes = new JsonArray();
+        for (String theme : PortalInitializer.getThemes()) {
+            themes.add(new JsonPrimitive(theme));
+        }
+        object.add("themes", themes);
         object.add("menu", ctx.view(configuration.getMenu(), DomainObjectViewer.class));
         return object;
     }

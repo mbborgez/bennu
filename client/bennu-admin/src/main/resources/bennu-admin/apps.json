@@ -2,42 +2,53 @@
     "apps": [
         {
             "title": {
-                "pt-PT": "Gestão do Portal",
-                "en-GB": "Portal Manager"
+                "pt-PT": "Configuração do Sistema",
+                "en-GB": "System Configuration"
             },
             "description": {
-                "pt-PT": "Gestão do Portal",
-                "en-GB": "Portal Manager"
+                "pt-PT": "Configuração do Sistema",
+                "en-GB": "System Configuration"
             },
             "accessExpression": "#managers",
-            "path": "bennu-admin/",
-            "functionalities": []
-        },
-        {
-            "title": {
-                "pt-PT": "Informação de Sistema",
-                "en-GB": "System Information"
-            },
-            "description": {
-                "pt-PT": "Informação de Sistema",
-                "en-GB": "System Information"
-            },
-            "accessExpression": "#managers",
-            "path": "bennu-admin#system/info",
-            "functionalities": []
-        },
-        {
-            "title": {
-                "pt-PT": "Gestão de Loggers",
-                "en-GB": "Logger Management"
-            },
-            "description": {
-                "pt-PT": "Gestão de Loggers",
-                "en-GB": "Logger Management"
-            },
-            "accessExpression": "#managers",
-            "path": "bennu-admin#system/logger",
-            "functionalities": []
+            "path": "bennu-admin/v2",
+            "functionalities": [
+                {
+                    "title": {
+                        "pt-PT": "Gestão do Portal",
+                        "en-GB": "Portal Manager"
+                    },
+                    "description": {
+                        "pt-PT": "Gestão do Portal",
+                        "en-GB": "Portal Manager"
+                    },
+                    "accessExpression": "#managers",
+                    "path": "#configuration"
+                },
+                {
+                    "title": {
+                        "pt-PT": "Informação de Sistema",
+                        "en-GB": "System Information"
+                    },
+                    "description": {
+                        "pt-PT": "Informação de Sistema",
+                        "en-GB": "System Information"
+                    },
+                    "accessExpression": "#managers",
+                    "path": "#system/info"
+                },
+                {
+                    "title": {
+                        "pt-PT": "Gestão de Loggers",
+                        "en-GB": "Logger Management"
+                    },
+                    "description": {
+                        "pt-PT": "Gestão de Loggers",
+                        "en-GB": "Logger Management"
+                    },
+                    "accessExpression": "#managers",
+                    "path": "#system/logger"
+                }
+            ]
         }
     ]
 }

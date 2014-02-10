@@ -124,7 +124,7 @@ public final class MenuContainer extends MenuContainer_Base {
         return FluentIterable.from(getChildSet()).filter(new Predicate<MenuItem>() {
             @Override
             public boolean apply(MenuItem menu) {
-                return menu.isAvailable(Authenticate.getUser());
+                return menu.isAvailable(Authenticate.getUser()) && menu.isVisible();
             }
         }).toSortedSet(Ordering.natural());
     }

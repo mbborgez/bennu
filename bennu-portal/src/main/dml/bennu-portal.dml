@@ -22,12 +22,12 @@ relation BennuPortalConfiguration {
 }
 
 public class MenuItem {
-	protected Integer ord (REQUIRED);
-	protected LocalizedString title (REQUIRED);
-	protected LocalizedString description (REQUIRED);
+	public Integer ord (REQUIRED);
+	public LocalizedString title (REQUIRED);
+	public LocalizedString description (REQUIRED);
 	protected String path (REQUIRED);
 	protected String fullPath (REQUIRED);
-	protected Boolean visible (REQUIRED);
+	public Boolean visible (REQUIRED);
 	public String layout;
 }
 
@@ -61,7 +61,7 @@ relation MenuItemGroup {
     protected MenuItem playsRole menuItem {
         multiplicity *;
     }
-    protected .org.fenixedu.bennu.core.domain.groups.Group playsRole accessGroup {
+    public .org.fenixedu.bennu.core.domain.groups.Group playsRole accessGroup {
         multiplicity 1..1;
     }
 }
