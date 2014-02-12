@@ -1,0 +1,100 @@
+<html ng-app="bootstrapModule" ng-controller="BootstrapCtrl">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<script type="text/javascript" src="bennu-core/js/angular.min.js"></script>
+	<script type="text/javascript" src="bennu-core/js/jquery.min.js"></script>
+	<script type="text/javascript" src="bennu-core/js/bootstrap.js"></script>
+	<link rel="stylesheet" href="bennu-core/css/bootstrap.min.css"></link>
+	<link rel="stylesheet" href="bennu-core/css/bootstrapWizard.css"></link>
+	<title>Bootstrap</title>
+</head>
+<div class="container">
+
+	<div>
+		<div ng-show="!locale">
+			<form>
+				<h1>Bootstrap</h1>
+				<fieldset>
+					<legend>Welcome<span class="badge">1</span></legend>
+					
+					<tt>Before you can bootstrap your application we need some info.</tt>
+					
+					<br></br>
+					
+					<label for="input" class="col-sm-2 control-label">Wizzard language:</label>
+					<div class="col-sm-10">
+						<select name="input" class="form-control" ng-required="{{field.isMandatory}}"
+							ng-model="tempLocale" ng-options="l.name for l in availableLocales">
+							<option value="">Choose One</option>
+						</select>
+					</div>
+				</fieldset>
+
+				<ul class="pager">
+					<li class="next">
+						<a ng-click="submitInitialConfig()">Next</a>
+					</li>
+				</ul>
+			</form>
+		</div>
+
+		<form ng-submit="submitWizard()" novalidate class="form-horizontal" role="form"  ng-show="locale" ng-repeat="bootstrapper in bootstrappers">	
+			<ng-form ng-repeat="section in bootstrapper.sections">
+				<section class="wizardSection" ng-show="getCurrentStep() == section">
+					<h1>{{bootstrapper.name[locale.key]}}</h1>
+				
+					<fieldset>
+						<legend>{{section.name[locale.key]}}<span class="badge">{{currentSectionNumber + 2}}</span></legend>
+						
+						<tt>{{section.description[locale.key]}}</tt>
+						
+						<br></br>
+						
+						<div ng-show="errors" ng-repeat="error in errors">
+							<div ng-hide="error.fieldKey" class="global-error">{{error.message[locale.key]}}</div>
+						</div>
+
+						<div ng-repeat="field in section.fields" class="form-group">
+							<ng-form class="row" ng-class="{'has-error': field.hasError}">
+								<label for="input" class="col-sm-2 control-label">{{field.name[locale.key]}}:</label>
+
+								<div class="col-sm-9">
+									<input name="input" class="form-control" type="{{field.fieldType}}" 
+										placeholder="{{field.hint[locale.key]}}" ng-required="{{field.isMandatory}}" 
+										ng-show="{{field.validValues.length == 0}}" ng-model="field.value" />
+
+									<select name="input" class="form-control" ng-required="{{field.isMandatory}}" 
+										ng-show="{{field.validValues > 0}}" ng-model="field.value" 
+										ng-options="v for v in field.validValues">
+										<option value="">Choose One</option>
+									</select>
+									
+									<div class="help-block" ng-show="field.hasRequiredError">This field is required.</div>
+									<div class="help-block" ng-show="field.hasError && field.error">{{field.error.message[locale.key]}}</div>
+								</div>
+							</ng-form>
+						</div>
+					</fieldset>
+
+					<ul class="pager">
+						<li class="previous" ng-show="$first && firstBootstrapper()">
+							<a ng-click="showInitialConfig()">Previous</a>
+						</li>
+						<li class="previous" ng-hide="$first && firstBootstrapper()">
+							<a ng-click="previousStep()">Previous</a>
+						</li>
+						<li class="next" ng-hide="$last && lastBootstrapper()">
+							<a ng-click="nextStep()">Next</a>
+						</li>
+						<li ng-class="{disabled: !$last}" class="next" ng-show="$last && lastBootstrapper()">
+							<a ng-click="submitWizard()" class="primary">Submit</a>
+						</li>
+					</ul>
+				</section>
+			</ng-form>
+		</form>
+	</div>
+</div>
+
+</html>
