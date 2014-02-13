@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.Filter;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.bennu.portal.domain.MenuFunctionality;
+import org.fenixedu.bennu.portal.domain.MenuItem;
 import org.fenixedu.bennu.portal.domain.PortalConfiguration;
 import org.fenixedu.commons.i18n.I18N;
 
@@ -68,13 +70,17 @@ public class PortalLayoutInjector implements Filter {
                 try {
                     PortalConfiguration config = PortalConfiguration.getInstance();
                     Map<String, Object> ctx = new HashMap<>();
+                    List<MenuItem> path = functionality.getPathFromRoot();
                     ctx.put("loggedUser", Authenticate.getUser());
                     ctx.put("body", body);
                     ctx.put("functionality", functionality);
                     ctx.put("config", config);
                     ctx.put("contextPath", request.getContextPath());
                     ctx.put("devMode", CoreConfiguration.getConfiguration().developmentMode());
-                    ctx.put("selectedTopLevel", functionality.getPathFromRoot().get(0));
+                    ctx.put("pathFromRoot", path);
+                    ctx.put("selectedTopLevel", path.get(0));
+                    ctx.put("locales", CoreConfiguration.supportedLocales());
+                    ctx.put("currentLocale", I18N.getLocale());
                     PebbleTemplate template = engine.compile(config.getTheme() + "/" + functionality.resolveLayout() + ".html");
                     template.evaluate(response.getWriter(), ctx, I18N.getLocale());
                 } catch (PebbleException e) {
