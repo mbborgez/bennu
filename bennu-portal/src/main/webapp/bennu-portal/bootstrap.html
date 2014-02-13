@@ -1,12 +1,12 @@
-<html ng-app>
+<html>
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<title>Bootstrap</title>
 </head>
 
 <h1>Bootstrap</h1>
-
 <form>
 	<dl>
 		<dt>In what country are you at?</dt>
@@ -21,20 +21,20 @@
 		<dt>Let's setup your school. You need to set up your university and school name.</dt>
 		
 		<dd>
-			<label for="xpto">University Name:</label>
-			<input id="xpto" type="text" placeholder="Example University" />
+			<label for="universityName">University Name:</label>
+			<input id="universityName" type="text" placeholder="Example University" />
 		</dd>
 		<dd>
-			<label for="xpto">University Acronym:</label>
-			<input id="xpto" type="text" placeholder="EU" />
+			<label for="universityAcronym">University Acronym:</label>
+			<input id="universityAcronym" type="text" placeholder="EU" />
 		</dd>
 		<dd>
-			<label for="xpto">School Name:</label>
-			<input id="xpto" type="text" placeholder="Example Engineering School" />
+			<label for="schoolName">School Name:</label>
+			<input id="schoolName" type="text" placeholder="Example Engineering School" />
 		</dd>
 		<dd>
-			<label for="xpto">School Acronym:</label>
-			<input id="xpto" type="text" placeholder="EES" />
+			<label for="schoolAcronym">School Acronym:</label>
+			<input id="schoolAcronym" type="text" placeholder="EES" />
 		</dd>
 	</dl>	
 	
@@ -42,24 +42,24 @@
 		<dt>Next we need to setup the domain information about your appddcations.</dt>
 
 		<dd>
-			<label for="xpto">School Domain:</label>
-			<input id="xpto" type="text" placeholder="ees.example.edu" />
+			<label for="schoolDomain">School Domain:</label>
+			<input id="schoolDomain" type="text" placeholder="ees.example.edu" />
 		</dd>
 		<dd>
-			<label for="xpto">School URL:</label>
-			<input id="xpto" type="text" placeholder="http://ees.example.edu" />
+			<label for="schoolURL">School URL:</label>
+			<input id="schoolURL" type="text" placeholder="http://ees.example.edu" />
 		</dd>
 		<dd>
-			<label for="xpto">School Email Domain:</label>
-			<input id="xpto" type="text" placeholder="ees.example.edu" />
+			<label for="schoolEmailDomain">School Email Domain:</label>
+			<input id="schoolEmailDomain" type="text" placeholder="ees.example.edu" />
 		</dd>
 		<dd>
-			<label for="xpto">Instalation Name:</label>
-			<input id="xpto" type="text" placeholder="EES FenixEdu" />
+			<label for="instalationName">Instalation Name:</label>
+			<input id="instalationName" type="text" placeholder="EES FenixEdu" />
 		</dd>
 		<dd>
-			<label for="xpto">Instalation Domain:</label>
-			<input id="xpto" type="text" placeholder="fenixedu.ees.example.edu" />
+			<label for="instalationDomain">Instalation Domain:</label>
+			<input id="instalationDomain" type="text" placeholder="fenixedu.ees.example.edu" />
 		</dd>
 	</dl>
 
@@ -67,26 +67,88 @@
 		<dt>Now we need to create an administrator account.</dt>
 
 		<dd>
-			<label for="xpto">Username:</label>
-			<input id="xpto" type="text" placeholder="username" />
+			<label for="username">Username:</label>
+			<input id="username" type="text" placeholder="username" />
 		</dd>
 		<dd>
-			<label for="xpto">Name:</label>
-			<input id="xpto" type="text" placeholder="FenixEdu Administrator" />
+			<label for="name">Name:</label>
+			<input id="name" type="text" placeholder="FenixEdu Administrator" />
 		</dd>
 		<dd>
-			<label for="xpto">Email:</label>
-			<input id="xpto" type="text" placeholder="username@ees.example.edu" />
+			<label for="email">Email:</label>
+			<input id="email" type="text" placeholder="username@ees.example.edu" />
 		</dd>
 		<dd>
-			<label for="xpto">Password:</label>
-			<input id="xpto" type="text" placeholder="password" />
+			<label for="password">Password:</label>
+			<input id="password" type="text" placeholder="password" />
 		</dd>
 		<dd>
-			<label for="xpto">Password (again):</label>
-			<input id="xpto" type="text" placeholder="password" />
+			<label for="passwordRetyped">Password (again):</label>
+			<input id="passwordRetyped" type="text" placeholder="password" />
 		</dd>
 	</dl>
+
+	<input type="submit" id="submitButton" value="Submit">
 </form>
+<pre id="result"></pre>
+<script type="text/javascript">
+	var cookies = null;
+	
+	function readCookie(name, c, C, i) {
+		if (cookies) {
+			return cookies[name];
+		}
+
+		c = document.cookie.split('; ');
+		cookies = {};
+
+		for (i = c.length - 1; i >= 0; i--) {
+			C = c[i].split('=');
+			cookies[C[0]] = C[1];
+		}
+
+		return cookies[name];
+	}
+
+	var contextPath = readCookie("contextPath") || "";
+	window.contextPath = contextPath;
+
+	function loadBootstrapData() {
+		return {
+			country: $("#country").val(),
+			universityName: $("#universityName").val(),
+			universityAcronym: $("#universityAcronym").val(),
+			schoolName: $("#schoolName").val(),
+			schoolAcronym: $("#schoolAcronym").val(),
+			schoolDomain: $("#schoolDomain").val(),
+			schoolURL: $("#schoolURL").val(),
+			schoolEmailDomain: $("#schoolEmailDomain").val(),
+			instalationName: $("#instalationName").val(),
+			instalationDomain: $("#instalationDomain").val(),
+			username: $("#username").val(),
+			name: $("#name").val(),
+			email: $("#email").val(),
+			password: $("#password").val(),
+			passwordRetyped: $("#passwordRetyped").val()
+		};
+	};
+
+	$( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+
+		$.ajax({
+			type: "POST",
+			url: contextPath + "/api/bennu-portal/bootstrap",
+			data: JSON.stringify(loadBootstrapData()),
+			success: function( data, textStatus, jqXHR ) {	alert("DATA received: " + data );		},
+			dataType: "json",
+			contentType: 'application/json'
+		});
+
+		console.log("DATA sent!");
+	});
+
+
+</script>
 
 </html>
