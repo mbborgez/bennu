@@ -113,66 +113,42 @@
 					});
 				}
 			};
-			//LOADING THEMES STATIC I18N MESSAGES
-			var theme_messages_url = theme_base + "/i18n/messages-" + BennuPortal.lang + ".json";
-			$.ajax({
-				type: "GET",
-				url: theme_messages_url,
-				dataType: "json",
-				success: function(messagesJson, status, response) {
-					$.ajaxSetup({ cache: true });
-					$.ajax({
-						type: "GET",
-						url: theme_url,
-						dataType: "text",
-						success: function(layoutTemplate, status, response) {
-							function applyLayout(hostJson) {
-								hostJson.contextPath = contextPath;
-								BennuPortal.addMls(hostJson);
+			$.ajaxSetup({ cache: true });
+			$.when(
+				$.getJSON(theme_base + "/i18n/messages-" + BennuPortal.lang + ".json"),
+				$.ajax(theme_url),
+				$.getScript(contextPath + "/bennu-portal/js/twig.min.js"),
+				$.getScript(json_handler_url)
+			).always(function (messagesJson, layoutTemplate) {
+				hostJson.contextPath = contextPath;
+				BennuPortal.addMls(hostJson);
 
-								if (jsonHandler) {
-									hostJson = jsonHandler(hostJson);
-								}
-								Twig.extendFilter('i18n', function(val) {
-									if(messagesJson[val]) {
-										return messagesJson[val];
-									} else {
-										return "_i18n!!" + BennuPortal.lang + "!!" + val + "!!";
-									}
-									return messagesJson[value];
-								});
-								Twig.extendFilter('mls', function (val) {
-									return hostJson._mls()(val);
-								});
-								var template = twig({ id: 'list', data: layoutTemplate });
-								var new_body = template.render(hostJson);
-								$('body').append(new_body);
-								$("#portal-container").appendTo("#content");
-								$('body').show();
-								if(developmentMode) {
-									$("head").prepend("<link rel='stylesheet/less' type='text/css' href='"+theme_base+"/less/style.less' />");
-									$("head").append("<script type='text/javascript' src='" + contextPath +"/bennu-portal/js/less.min.js" + "'></script>");
-
-								} else {
-									$("head").append('<link rel="stylesheet" href="' + styles_url + '" rel="stylesheet" />');
-								}
-								$("body").show();
-								$.ajaxSetup({ cache: false });
-							}
-
-							$.ajax({
-								type: "GET",
-								url: json_handler_url,
-								dataType: "script",
-								async: false
-							}).done(function(script, textStatus) {
-								applyLayout(hostJson);
-							}).fail(function(jqxhr, settings, exception) {
-								applyLayout(hostJson);
-							});
-						}
-					});
+				if (typeof jsonHandler === "function") {
+					hostJson = jsonHandler(hostJson);
 				}
+				var myTwig = Twig.exports || Twig;
+				myTwig.extendFilter('i18n', function(val) {
+					if(messagesJson[val]) {
+						return messagesJson[val];
+					} else {
+						return "_i18n!!" + BennuPortal.lang + "!!" + val + "!!";
+					}
+					return messagesJson[value];
+				});
+				myTwig.extendFilter('mls', function (val) {
+					return hostJson._mls()(val);
+				});
+				var template = myTwig.twig({ data: layoutTemplate[0] });
+				var new_body = template.render(hostJson);
+				$('body').append(new_body);
+				$("#portal-container").appendTo("#content");
+				if(developmentMode) {
+					$("head").prepend("<link rel='stylesheet/less' type='text/css' href='"+theme_base+"/less/style.less' />");
+					$("head").append("<script type='text/javascript' src='" + contextPath +"/bennu-portal/js/less.min.js" + "'></script>");
+				} else {
+					$("head").append('<link rel="stylesheet" href="' + styles_url + '" rel="stylesheet" />');
+				}
+				$('body').show();
 			});
 		}
 	});
