@@ -47,8 +47,7 @@
         <div class="form-group">
             <label class="col-sm-2 control-label" for="systemEmailAddress">Theme</label>
             <div class="col-sm-10">
-                <select id="theme" ng-repeat="theme in menu.themes">
-                    <option value="{{theme}}" ng-selected="{{ theme == menu.theme}} ">{{theme}}</option>
+                <select ng-model="menu.theme" ng-required="true" ng-options="theme for theme in menu.themes">
                 </select>
             </div>
         </div>

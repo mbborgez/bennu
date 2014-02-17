@@ -10,7 +10,7 @@
                 "en-GB": "System Configuration"
             },
             "accessExpression": "#managers",
-            "path": "bennu-admin/v2",
+            "path": "bennu-admin",
             "functionalities": [
                 {
                     "title": {
@@ -22,7 +22,7 @@
                         "en-GB": "Portal Manager"
                     },
                     "accessExpression": "#managers",
-                    "path": "#configuration"
+                    "path": "#/configuration"
                 },
                 {
                     "title": {
@@ -34,7 +34,7 @@
                         "en-GB": "System Information"
                     },
                     "accessExpression": "#managers",
-                    "path": "#system/info"
+                    "path": "#/system/info"
                 },
                 {
                     "title": {
@@ -46,7 +46,7 @@
                         "en-GB": "Logger Management"
                     },
                     "accessExpression": "#managers",
-                    "path": "#system/logger"
+                    "path": "#/system/logger"
                 }
             ]
         }

@@ -39,13 +39,13 @@ bennuAdmin.config(['$routeProvider',
   }]);
 
 bennuAdmin.controller('PortalConfigurationCtrl', ['$scope', '$http', function ($scope, $http) {
-  $http.get('../../api/bennu-portal/configuration').success(function (data) {
+  $http.get('../api/bennu-portal/configuration').success(function (data) {
     $scope.locales = BennuPortal.locales;
     $scope.menu = data;
   });
   $scope.error = '';
   $scope.save = function() {
-    $http.put('../../api/bennu-portal/configuration/' + $scope.menu.id, $scope.menu).success(function () {
+    $http.put('../api/bennu-portal/configuration/' + $scope.menu.id, $scope.menu).success(function () {
       location.reload();
     });
   }
@@ -79,18 +79,18 @@ bennuAdmin.controller('PortalConfigurationCtrl', ['$scope', '$http', function ($
 }]);
 
 bennuAdmin.controller('SystemInfoController', [ '$scope', '$http', function ($scope, $http) {
-  $http.get('../../api/bennu-core/system/info').success(function (data) {
+  $http.get('../api/bennu-core/system/info').success(function (data) {
     $scope.data = data;
   });
 }]);
 
 bennuAdmin.controller('LoggerController', [ '$scope', '$http', function ($scope, $http) {
   $scope.changeLevel = function(logger, level) {
-    $http.get('../../api/bennu-core/system/logger/' + logger.name + '/' + level).success(function (data) {
+    $http.get('../api/bennu-core/system/logger/' + logger.name + '/' + level).success(function (data) {
       $scope.loggers = data.loggers;
     });
   }
-  $http.get('../../api/bennu-core/system/logger').success(function (data) {
+  $http.get('../api/bennu-core/system/logger').success(function (data) {
     $scope.server = data.server;
     $scope.loggers = data.loggers;
   });
