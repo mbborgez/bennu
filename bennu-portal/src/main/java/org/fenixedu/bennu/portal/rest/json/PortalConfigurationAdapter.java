@@ -5,6 +5,7 @@ import org.fenixedu.bennu.core.json.JsonBuilder;
 import org.fenixedu.bennu.core.json.JsonUpdater;
 import org.fenixedu.bennu.core.json.JsonViewer;
 import org.fenixedu.bennu.core.json.adapters.DomainObjectViewer;
+import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.bennu.portal.domain.PortalConfiguration;
 import org.fenixedu.bennu.portal.servlet.PortalInitializer;
 import org.fenixedu.commons.i18n.LocalizedString;
@@ -17,6 +18,9 @@ import com.google.gson.JsonPrimitive;
 
 @DefaultJsonAdapter(PortalConfiguration.class)
 public class PortalConfigurationAdapter implements JsonViewer<PortalConfiguration>, JsonUpdater<PortalConfiguration> {
+
+    private static final boolean developmentMode = CoreConfiguration.getConfiguration().developmentMode();
+
     @Override
     public JsonElement view(PortalConfiguration configuration, JsonBuilder ctx) {
         JsonObject object = new JsonObject();
@@ -25,6 +29,7 @@ public class PortalConfigurationAdapter implements JsonViewer<PortalConfiguratio
         object.add("htmlTitle", configuration.getHtmlTitle().json());
         object.add("applicationSubTitle", configuration.getApplicationSubTitle().json());
         object.add("applicationCopyright", configuration.getApplicationCopyright().json());
+        object.addProperty("developmentMode", developmentMode);
         object.addProperty("supportEmailAddress", configuration.getSupportEmailAddress());
         object.addProperty("systemEmailAddress", configuration.getSystemEmailAddress());
         object.addProperty("theme", configuration.getTheme());
