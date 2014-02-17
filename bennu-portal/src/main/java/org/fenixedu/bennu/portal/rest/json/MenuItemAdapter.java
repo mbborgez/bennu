@@ -1,6 +1,5 @@
 package org.fenixedu.bennu.portal.rest.json;
 
-import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
 import org.fenixedu.bennu.core.domain.groups.Group;
 import org.fenixedu.bennu.core.json.JsonBuilder;
 import org.fenixedu.bennu.core.json.JsonCreator;
@@ -16,7 +15,6 @@ import pt.ist.fenixframework.FenixFramework;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-@DefaultJsonAdapter(MenuItem.class)
 public class MenuItemAdapter implements JsonViewer<MenuItem>, JsonUpdater<MenuItem>, JsonCreator<MenuContainer> {
 
     @Override
@@ -61,7 +59,7 @@ public class MenuItemAdapter implements JsonViewer<MenuItem>, JsonUpdater<MenuIt
             if (container.isRoot()) {
                 json.add("title", ctx.view(PortalConfiguration.getInstance().getApplicationTitle()));
             }
-            json.add("menu", ctx.view(container.getUserMenu()));
+            json.add("menu", ctx.view(container.getOrderedChild(), MenuItemAdapter.class));
         }
         return json;
     }

@@ -41,7 +41,7 @@ public class MenuResource extends BennuRestResource {
     }
 
     private String viewMenu(MenuItem menuItem) {
-        return view(menuItem);
+        return view(menuItem, MenuItemAdapter.class);
     }
 
     @POST
@@ -49,7 +49,7 @@ public class MenuResource extends BennuRestResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String createMenu(final String jsonData) {
         accessControl("#managers");
-        return view(create(jsonData, MenuContainer.class, MenuItemAdapter.class));
+        return viewMenu(create(jsonData, MenuContainer.class, MenuItemAdapter.class));
     }
 
     @PUT
@@ -58,7 +58,7 @@ public class MenuResource extends BennuRestResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String updateMenu(final String jsonData, @PathParam("oid") final String oid) {
         accessControl("#managers");
-        return view(update(jsonData, getMenuItem(oid)));
+        return viewMenu(update(jsonData, getMenuItem(oid), MenuItemAdapter.class));
     }
 
     @Path("{oid}")
@@ -108,7 +108,7 @@ public class MenuResource extends BennuRestResource {
         if (app == null) {
             return Response.status(Status.NOT_FOUND).build();
         }
-        return Response.ok(view(doInstall(app, container))).build();
+        return Response.ok(viewMenu(doInstall(app, container))).build();
     }
 
     @Atomic(mode = TxMode.WRITE)
