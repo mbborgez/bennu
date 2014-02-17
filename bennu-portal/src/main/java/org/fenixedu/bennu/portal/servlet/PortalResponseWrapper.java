@@ -24,10 +24,15 @@ public class PortalResponseWrapper extends HttpServletResponseWrapper {
     }
 
     public String getContent() {
+        return writer.toString();
+    }
+
+    @Override
+    public void resetBuffer() {
+        super.resetBuffer();
         if (writer != null) {
-            return writer.toString();
+            writer.reset();
         }
-        return "";
     }
 
     @Override
@@ -37,6 +42,10 @@ public class PortalResponseWrapper extends HttpServletResponseWrapper {
             getResponse().getWriter().write(writer.toString());
             writer.reset();
         }
+    }
+
+    public boolean hasData() {
+        return writer != null;
     }
 
 }

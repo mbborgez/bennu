@@ -63,7 +63,7 @@ public class PortalLayoutInjector implements Filter {
         chain.doFilter(request, wrapper);
 
         MenuFunctionality functionality = BennuPortalDispatcher.getSelectedFunctionality(request);
-        if (functionality != null) {
+        if (functionality != null && wrapper.hasData()) {
             PortalBackend backend = PortalBackendRegistry.getPortalBackend(functionality.getProvider());
             if (backend.requiresServerSideLayout()) {
                 String body = wrapper.getContent();
@@ -86,6 +86,8 @@ public class PortalLayoutInjector implements Filter {
                 } catch (PebbleException e) {
                     e.printStackTrace();
                 }
+            } else {
+                wrapper.flushBuffer();
             }
         } else {
             wrapper.flushBuffer();
