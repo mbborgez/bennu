@@ -14,38 +14,61 @@
 
 <h1>Bootstrap</h1>
 
-<div ng-controller="BootstrapCtrl">
-	<form ng-submit="submitWizard()">
-		<div ng-show="hasSections()">
+<div name="bootstrapWizard" ng-controller="BootstrapCtrl">
+	<div ng-show="hasSections()">
 
+		<form name="outerForm" ng-submit="submitWizard()" novalidate>	
 			<div ng-repeat="section in sections">
-				<div ng-show="getCurrentStep() == section">
-					<fieldset>
-						<legend>{{section.name}}</legend>
-						<p>{{section.description}}</p>
-						<div ng-repeat="field in section.fields">
-							<label name="{{field.name}}">{{field.name}}:</label>
-							<input name="{{field.name}}" type="text" placeholder="{{field.hint}}" ng-required="{{field.isMandatory}}" ng-model="field.value" />
-						</div>
-					</fieldset>
 
-					<div id="wizzardControll">
-						<a class="btn" ng-click="previousStep()" ng-show="!$first">Back</a>
-						<a class="btn btn-primary" ng-click="nextStep()" ng-show="!$last">Next</a>
+				<ng-form name="sectionForm">
+					<div ng-show="getCurrentStep() == section">
+						
+							<fieldset>
+								<legend>{{section.name}}</legend>
+
+								<div ng-repeat="field in section.fields">
+									<ng-form name="fieldForm">
+										<label>{{field.name}}:
+											<input name="input" 
+													type="text" 
+													placeholder="{{field.hint}}" 
+													ng-required="{{field.isMandatory}}" 
+													ng-model="field.value" />
+										</label>
+									</ng-form>
+									
+									<small class="error" ng-show="fieldForm.input.$dirty && fieldForm.input.$error.required">required</small>
+								</div>
+								
+							</fieldset>
+							
+							<div name="wizzardControll">
+								<a ng-click="previousStep()" ng-disabled="$first">Back</a>
+								<a ng-click="nextStep()" ng-disabled="$last || sectionForm.$invalid">Next</a>
+								<button type="submit" ng-show="$last" ng-disabled="outerForm.$invalid">Submit</button>
+							</div>
+
 					</div>
-				</div>
+
+				</ng-form>
 
 			</div>
+		</form>
 
-			<input type="submit" value="Submit">
-		</div>
-	</form>
+	</div>
 </div>
 
 <style type="text/css">
 
 fieldset {
 	border: 0px;
+}
+
+input.ng-invalid {
+  border: 1px solid red;
+}
+input.ng-valid {
+  border: 1px solid green;
 }
 
 </style>
