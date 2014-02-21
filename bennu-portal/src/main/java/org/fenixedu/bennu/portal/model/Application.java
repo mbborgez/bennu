@@ -32,12 +32,20 @@ public final class Application {
 
     private final LocalizedString description;
 
-    public Application(String key, String path, String accessGroup, LocalizedString title, LocalizedString description) {
+    private final String group;
+
+    public Application(String key, String path, String accessGroup, LocalizedString title, LocalizedString description,
+            String group) {
         this.key = key;
         this.path = path;
         this.accessGroup = accessGroup;
         this.title = title;
         this.description = description;
+        this.group = group;
+    }
+
+    public Application(String key, String path, String accessGroup, LocalizedString title, LocalizedString description) {
+        this(key, path, accessGroup, title, description, "");
     }
 
     /**
@@ -68,6 +76,10 @@ public final class Application {
 
     public Set<Functionality> getFunctionalities() {
         return functionalities;
+    }
+
+    public String getGroup() {
+        return group;
     }
 
     public void addFunctionality(Functionality functionality) {

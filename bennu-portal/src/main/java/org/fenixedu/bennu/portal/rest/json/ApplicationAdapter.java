@@ -16,6 +16,7 @@ public class ApplicationAdapter implements JsonViewer<Application> {
         JsonObject json = new JsonObject();
 
         json.addProperty("key", obj.getKey());
+        json.addProperty("group", obj.getGroup());
         json.addProperty("title", obj.getTitle().getContent());
         json.addProperty("description", obj.getDescription().getContent());
         return json;

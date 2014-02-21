@@ -57,8 +57,9 @@ public class ClientSiteBackendInitilizer implements ServletContextListener {
         final String path = appJson.get("path").getAsString();
         final LocalizedString title = LocalizedString.fromJson(appJson.get("title"));
         final LocalizedString description = LocalizedString.fromJson(appJson.get("description"));
+        final String group = appJson.has("group") ? appJson.get("group").getAsString() : "client-side";
 
-        Application app = new Application(path, path, accessExpression, title, description);
+        Application app = new Application(path, path, accessExpression, title, description, group);
 
         if (appJson.has("functionalities")) {
             for (JsonElement functionality : appJson.get("functionalities").getAsJsonArray()) {
