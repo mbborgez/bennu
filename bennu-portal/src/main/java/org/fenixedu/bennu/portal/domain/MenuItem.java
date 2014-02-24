@@ -66,7 +66,8 @@ public abstract class MenuItem extends MenuItem_Base implements Comparable<MenuI
      */
     @Override
     public int compareTo(MenuItem o) {
-        return getOrd().compareTo(o.getOrd());
+        int ord = getOrd().compareTo(o.getOrd());
+        return ord == 0 ? getTitle().compareTo(o.getTitle()) : ord;
     }
 
     /**
