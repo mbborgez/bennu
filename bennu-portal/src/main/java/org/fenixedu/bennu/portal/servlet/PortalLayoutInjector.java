@@ -35,6 +35,8 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 @WebFilter("/*")
 public class PortalLayoutInjector implements Filter {
 
+    private static final String SKIP_LAYOUT_INJECTION = "$$SKIP_LAYOUT_INJECTION$$";
+
     private PebbleEngine engine;
 
     @Override
@@ -63,7 +65,7 @@ public class PortalLayoutInjector implements Filter {
         chain.doFilter(request, wrapper);
 
         MenuFunctionality functionality = BennuPortalDispatcher.getSelectedFunctionality(request);
-        if (functionality != null && wrapper.hasData()) {
+        if (functionality != null && wrapper.hasData() && request.getAttribute(SKIP_LAYOUT_INJECTION) == null) {
             PortalBackend backend = PortalBackendRegistry.getPortalBackend(functionality.getProvider());
             if (backend.requiresServerSideLayout()) {
                 String body = wrapper.getContent();
@@ -92,6 +94,13 @@ public class PortalLayoutInjector implements Filter {
         } else {
             wrapper.flushBuffer();
         }
+    }
+
+    /**
+     * Requests that layout injection be skipped on the given request
+     */
+    public static void skipLayoutOn(HttpServletRequest request) {
+        request.setAttribute(SKIP_LAYOUT_INJECTION, SKIP_LAYOUT_INJECTION);
     }
 
     @Override
