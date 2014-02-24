@@ -1,7 +1,7 @@
 package org.fenixedu.bennu.portal.model;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.fenixedu.commons.i18n.LocalizedString;
 
@@ -20,7 +20,7 @@ import org.fenixedu.commons.i18n.LocalizedString;
  */
 public final class Application {
 
-    private final Set<Functionality> functionalities = new HashSet<Functionality>();
+    private final Set<Functionality> functionalities = new TreeSet<Functionality>();
 
     private final String key;
 

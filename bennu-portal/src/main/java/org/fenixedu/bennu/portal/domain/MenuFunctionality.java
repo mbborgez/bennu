@@ -23,8 +23,8 @@ public final class MenuFunctionality extends MenuFunctionality_Base {
         if (parent == null) {
             throw new IllegalArgumentException("MenuFunctionality cannot be created without a parent!");
         }
-        init(parent, true, functionality.getAccessGroup(), functionality.getTitle(), functionality.getDescription(),
-                functionality.getPath());
+        init(parent, functionality.isVisible(), functionality.getAccessGroup(), functionality.getTitle(),
+                functionality.getDescription(), functionality.getPath());
         setItemKey(functionality.getKey());
         setProvider(functionality.getProvider());
     }

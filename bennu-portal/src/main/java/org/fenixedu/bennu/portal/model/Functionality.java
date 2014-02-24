@@ -22,7 +22,7 @@ import com.google.gson.JsonObject;
  * @author João Carvalho (joao.pedro.carvalho@tecnico.ulisboa.pt)
  * 
  */
-public final class Functionality {
+public final class Functionality implements Comparable<Functionality> {
 
     private final String provider;
 
@@ -36,14 +36,22 @@ public final class Functionality {
 
     private final LocalizedString description;
 
+    private final boolean visible;
+
     public Functionality(String provider, String key, String path, String accessGroup, LocalizedString title,
             LocalizedString description) {
+        this(provider, key, path, accessGroup, title, description, true);
+    }
+
+    public Functionality(String provider, String key, String path, String accessGroup, LocalizedString title,
+            LocalizedString description, boolean visible) {
         this.provider = provider;
         this.key = key;
         this.path = path;
         this.accessGroup = accessGroup;
         this.title = title;
         this.description = description;
+        this.visible = visible;
     }
 
     /**
@@ -79,6 +87,10 @@ public final class Functionality {
         return description;
     }
 
+    public boolean isVisible() {
+        return visible;
+    }
+
     public JsonObject json() {
         JsonObject obj = new JsonObject();
         obj.addProperty("path", path);
@@ -93,6 +105,17 @@ public final class Functionality {
     @Override
     public String toString() {
         return json().toString();
+    }
+
+    @Override
+    public int compareTo(Functionality other) {
+        if (!this.visible && other.visible) {
+            return -1;
+        }
+        if (this.visible && !other.visible) {
+            return 1;
+        }
+        return this.title.compareTo(other.title);
     }
 
 }
