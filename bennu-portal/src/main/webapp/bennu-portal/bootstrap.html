@@ -12,49 +12,52 @@
 	<title>Bootstrap</title>
 </head>
 
+<div class="container">
 <h1>Bootstrap</h1>
 
-<div name="bootstrapWizard" ng-controller="BootstrapCtrl">
-	<div ng-show="hasSections()">
+	<div name="bootstrapWizard" ng-controller="BootstrapCtrl">
+		<div ng-show="hasSections()">
 
-		<form name="outerForm" ng-submit="submitWizard()" novalidate>	
-			<div ng-repeat="section in sections">
+			<form name="outerForm" ng-submit="submitWizard()" novalidate>	
+				<div ng-repeat="section in sections">
 
-				<ng-form name="sectionForm">
-					<div ng-show="getCurrentStep() == section">
-						
-							<fieldset>
-								<legend>{{section.name}}</legend>
-
-								<div ng-repeat="field in section.fields">
-									<ng-form name="fieldForm">
-										<label>{{field.name}}:
-											<input name="input" 
-													type="text" 
-													placeholder="{{field.hint}}" 
-													ng-required="{{field.isMandatory}}" 
-													ng-model="field.value" />
-										</label>
-									</ng-form>
-									
-									<small class="error" ng-show="fieldForm.input.$dirty && fieldForm.input.$error.required">required</small>
-								</div>
-								
-							</fieldset>
+					<ng-form name="{{section.name}}">
+						<div ng-show="getCurrentStep() == section">
 							
-							<div name="wizzardControll">
-								<a ng-click="previousStep()" ng-disabled="$first">Back</a>
-								<a ng-click="nextStep()" ng-disabled="$last || sectionForm.$invalid">Next</a>
-								<button type="submit" ng-show="$last" ng-disabled="outerForm.$invalid">Submit</button>
-							</div>
+								<fieldset>
+									<legend>{{section.name}}</legend>
 
-					</div>
+									<div ng-repeat="field in section.fields">
+										<ng-form name="{{field.name}}">
+											<label>{{field.name}}:
+												<input name="input" 
+														type="text" 
+														placeholder="{{field.hint}}" 
+														ng-required="{{field.isMandatory}}" 
+														ng-model="field.value" />
+											</label>
+										</ng-form>
+										<small class="error" ng-show="hasError(section, field)">{{error.message}}</small>
+										<small class="error" ng-show="{{field.name}}.input.$dirty && {{field.name}}.input.$error.required">required</small>
+									</div>
+									
+								</fieldset>
+								
+								<div name="wizzardControll">
+									<a ng-click="previousStep()" ng-show="!$first">Back</a>
+									<a ng-click="nextStep()" ng-show="!$last && {{section.name}}.$valid">Next</a>
+									<button type="submit" ng-show="$last" ng-disabled="outerForm.$invalid" class="btn btn-default">Submit</button>
+									<!-- TODO: import bootstrap style -->
+								</div>
 
-				</ng-form>
+						</div>
 
-			</div>
-		</form>
+					</ng-form>
 
+				</div>
+			</form>
+
+		</div>
 	</div>
 </div>
 
@@ -71,6 +74,25 @@ input.ng-valid {
   border: 1px solid green;
 }
 
+.error {
+	display: block;
+	padding: 0.375em 0.25em;
+	margin-top: 0;
+	margin-bottom: 1em;
+	font-size: 0.75em;
+	font-weight: bold;
+	background: #c60f13;
+	color: white;
+}
+
+.container {
+	width: 66.66667%;
+	margin-left: auto;
+	margin-right: auto;
+	border: 1px solid #e2e2e2;
+	padding: 20px;
+	background-color: rgba(247, 242, 228, 0.55);
+}
 </style>
 
 </html>

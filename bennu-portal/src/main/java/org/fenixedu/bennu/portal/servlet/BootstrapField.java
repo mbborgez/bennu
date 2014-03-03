@@ -18,7 +18,7 @@ public class BootstrapField {
     }
 
     public BootstrapField(String name, String description, boolean isMandatory) {
-        this(name, description, isMandatory, "text", new HashSet<String>();
+        this(name, description, isMandatory, "text", new HashSet<String>());
     }
 
     public BootstrapField(String name, String description) {

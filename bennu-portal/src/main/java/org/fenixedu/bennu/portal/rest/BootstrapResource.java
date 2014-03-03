@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.fenixedu.bennu.core.rest.BennuRestResource;
+import org.fenixedu.bennu.portal.servlet.BootstrapError;
 import org.fenixedu.bennu.portal.servlet.BootstrapField;
 import org.fenixedu.bennu.portal.servlet.BootstrapSection;
 import org.fenixedu.bennu.portal.servlet.PortalBootstrapper;
@@ -20,23 +21,29 @@ import org.fenixedu.bennu.portal.servlet.PortalBootstrapper;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 @Path("/bennu-portal/bootstrap")
 public class BootstrapResource extends BennuRestResource {
 
+    private final Type INPUT_TYPE = new TypeToken<List<BootstrapSection>>() {
+    }.getType();
+
     @POST
-    @SuppressWarnings("serial")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(final String json) {
-        Type type = new TypeToken<List<BootstrapSection>>() {
-        }.getType();
-
-        List<BootstrapSection> sections = new Gson().fromJson(json, type);
-        if (validate(sections)) {
+        List<BootstrapSection> sections = new Gson().fromJson(json, INPUT_TYPE);
+        try {
+            getPortalBootstrapper().boostrap(sections);
             return Response.status(200).build();
+        } catch (BootstrapError e) {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("sectionName", e.getSectionName());
+            jsonObject.addProperty("fieldName", e.getFieldName());
+            jsonObject.addProperty("message", e.getMessage());
+            return Response.status(500).entity(jsonObject.toString()).build();
         }
-        return Response.status(500).build();
     }
 
     @GET
@@ -47,10 +54,6 @@ public class BootstrapResource extends BennuRestResource {
 
     private PortalBootstrapper getPortalBootstrapper() {
         return new DefaultPortalBootstrapper();
-    }
-
-    private boolean validate(List<BootstrapSection> sections) {
-        return true;
     }
 
     public static class DefaultPortalBootstrapper implements PortalBootstrapper {
@@ -78,9 +81,8 @@ public class BootstrapResource extends BennuRestResource {
         }
 
         @Override
-        public String boostrap(List<BootstrapSection> sections) {
-            // TODO Auto-generated method stub
-            return null;
+        public void boostrap(List<BootstrapSection> sections) throws BootstrapError {
+            throw new BootstrapError("firstSection", "firstField", "STUPID ERROR");
         }
 
     }

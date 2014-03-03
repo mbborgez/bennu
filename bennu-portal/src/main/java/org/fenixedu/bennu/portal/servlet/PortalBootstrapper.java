@@ -17,6 +17,6 @@ public interface PortalBootstrapper {
     /**
      * This method will be called with all the {@link BoostrapSection} with required values
      */
-    public String boostrap(List<BootstrapSection> sections);
+    public void boostrap(List<BootstrapSection> sections) throws BootstrapError;
 
 }
