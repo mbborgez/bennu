@@ -2,53 +2,84 @@
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular-resource.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular-animate.js" type="text/javascript"></script>
+
 	<script type="text/javascript" src="bennu-portal/js/jquery.min.js"></script>
 	<script type="text/javascript" src="bennu-portal/js/less.min.js"></script>
-	<script type="text/javascript" src="bennu-portal/bootstrap.js"></script>
+	<script type="text/javascript" src="bennu-portal/js/twig.min.js"></script>
 	<script type="text/javascript" src="bennu-portal/portal.js"></script>
+	<script type="text/javascript" src="bennu-portal/bootstrap.js"></script>
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
 	<title>Bootstrap</title>
 </head>
-
+  <div id="modal"></div>
 <div class="container">
-<h1>Bootstrap</h1>
+	<h1>Bootstrap</h1>
 
 	<div name="bootstrapWizard" ng-controller="BootstrapCtrl">
 		<div ng-show="hasSections()">
 
-			<form name="outerForm" ng-submit="submitWizard()" novalidate>	
+			<form name="bootstrapForm" ng-submit="submitWizard()" novalidate class="form-horizontal" role="form">	
 				<div ng-repeat="section in sections">
 
 					<ng-form name="{{section.name}}">
 						<div ng-show="getCurrentStep() == section">
 							
 								<fieldset>
-									<legend>{{section.name}}</legend>
-
-									<div ng-repeat="field in section.fields">
-										<ng-form name="{{field.name}}">
-											<label>{{field.name}}:
-												<input name="input" 
-														type="text" 
-														placeholder="{{field.hint}}" 
-														ng-required="{{field.isMandatory}}" 
-														ng-model="field.value" />
-											</label>
-										</ng-form>
-										<small class="error" ng-show="hasError(section, field)">{{error.message}}</small>
-										<small class="error" ng-show="{{field.name}}.input.$dirty && {{field.name}}.input.$error.required">required</small>
-									</div>
+									<legend>{{section.name}}<span class="badge">{{currentStepNumber + 1}}</span></legend>
 									
+									<div class="alert alert-danger bs-alert-old-docs" ng-show="hasAnyError()">{{error.message}}</div>
+									
+									<div ng-repeat="field in section.fields" class="control-group">
+										
+										<div class="form-group">
+											<ng-form name="{{field.name}}" class="row" >
+
+												<label for="input" class="col-sm-2 control-label">{{field.name}}:</label>
+											
+												<div class="col-sm-10">
+													<input name="input"
+															class="form-control"
+															type="text"
+															ng-class="{error: {{hasError(section,field)}}}" 
+															placeholder="{{field.hint}}" 
+															ng-required="{{field.isMandatory}}"
+															ng-model="field.value" />
+
+													<span class="help-block" ng-show="{{field.name}}.input.$dirty && {{field.name}}.input.$error.required">The field <strong>{{field.name}}</strong> is mandatory.</span>
+												</div>
+												
+											</ng-form>
+											
+
+										</div>
+
+									</div>
 								</fieldset>
-								
-								<div name="wizzardControll">
-									<a ng-click="previousStep()" ng-show="!$first">Back</a>
-									<a ng-click="nextStep()" ng-show="!$last && {{section.name}}.$valid">Next</a>
-									<button type="submit" ng-show="$last" ng-disabled="outerForm.$invalid" class="btn btn-default">Submit</button>
-									<!-- TODO: import bootstrap style -->
-								</div>
+
+								<ul class="pager">
+									<li ng-class="{disabled: $first}" class="previous">
+										<a ng-click="previousStep()">Previous</a>
+									</li>
+									<li ng-class="{disabled: $last}" class="next" ng-show="!$last">
+										<a ng-click="nextStep()">Next</a>
+									</li>
+									<li ng-class="{disabled: !$last}" class="next" ng-show="$last">
+										<a ng-click="submitWizard()" class="primary">Submit</a>
+									</li>
+								</ul>
 
 						</div>
 
@@ -63,36 +94,26 @@
 
 <style type="text/css">
 
+.alert {
+	border: none;
+}
+
 fieldset {
 	border: 0px;
 }
 
-input.ng-invalid {
-  border: 1px solid red;
-}
-input.ng-valid {
-  border: 1px solid green;
+legend .badge {
+	margin-left: 7px;
+	vertical-align: middle;
 }
 
+input.ng-invalid.ng-dirty {
+  border: 1px solid #dca7a7;
+}
 .error {
-	display: block;
-	padding: 0.375em 0.25em;
-	margin-top: 0;
-	margin-bottom: 1em;
-	font-size: 0.75em;
-	font-weight: bold;
-	background: #c60f13;
-	color: white;
+	border: 1px solid #dca7a7;
 }
 
-.container {
-	width: 66.66667%;
-	margin-left: auto;
-	margin-right: auto;
-	border: 1px solid #e2e2e2;
-	padding: 20px;
-	background-color: rgba(247, 242, 228, 0.55);
-}
 </style>
 
 </html>
