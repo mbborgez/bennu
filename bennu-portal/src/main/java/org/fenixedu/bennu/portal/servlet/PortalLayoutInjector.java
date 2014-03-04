@@ -1,6 +1,7 @@
 package org.fenixedu.bennu.portal.servlet;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.Map;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -23,6 +25,8 @@ import org.fenixedu.bennu.portal.domain.MenuFunctionality;
 import org.fenixedu.bennu.portal.domain.MenuItem;
 import org.fenixedu.bennu.portal.domain.PortalConfiguration;
 import org.fenixedu.commons.i18n.I18N;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -35,16 +39,26 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 @WebFilter("/*")
 public class PortalLayoutInjector implements Filter {
 
+    private static final Logger logger = LoggerFactory.getLogger(PortalLayoutInjector.class);
+
     private static final String SKIP_LAYOUT_INJECTION = "$$SKIP_LAYOUT_INJECTION$$";
 
     private PebbleEngine engine;
 
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
+        final ServletContext servletContext = filterConfig.getServletContext();
         engine = new PebbleEngine(new ClasspathLoader() {
             @Override
             public Reader getReader(String templateName) throws LoaderException {
-                return new InputStreamReader(filterConfig.getServletContext().getResourceAsStream("/themes/" + templateName));
+                InputStream stream = servletContext.getResourceAsStream("/themes/" + templateName + ".html");
+                if (stream != null) {
+                    return new InputStreamReader(stream);
+                } else {
+                    logger.warn("Could not find template named {}, falling back to default!", templateName);
+                    return new InputStreamReader(servletContext.getResourceAsStream("/themes/"
+                            + PortalConfiguration.getInstance().getTheme() + "/default.html"));
+                }
             }
         });
         if (CoreConfiguration.getConfiguration().developmentMode()) {
@@ -83,10 +97,10 @@ public class PortalLayoutInjector implements Filter {
                     ctx.put("selectedTopLevel", path.get(0));
                     ctx.put("locales", CoreConfiguration.supportedLocales());
                     ctx.put("currentLocale", I18N.getLocale());
-                    PebbleTemplate template = engine.compile(config.getTheme() + "/" + functionality.resolveLayout() + ".html");
+                    PebbleTemplate template = engine.compile(config.getTheme() + "/" + functionality.resolveLayout());
                     template.evaluate(response.getWriter(), ctx, I18N.getLocale());
                 } catch (PebbleException e) {
-                    e.printStackTrace();
+                    throw new ServletException("Could not render template!", e);
                 }
             } else {
                 wrapper.flushBuffer();
