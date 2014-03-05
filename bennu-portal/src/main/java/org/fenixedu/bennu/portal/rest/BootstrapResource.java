@@ -18,6 +18,7 @@ import org.fenixedu.bennu.portal.servlet.BootstrapField;
 import org.fenixedu.bennu.portal.servlet.BootstrapSection;
 import org.fenixedu.bennu.portal.servlet.PortalBootstrapper;
 
+import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -63,19 +64,21 @@ public class BootstrapResource extends BennuRestResource {
             List<BootstrapField> firstSectionFields = new ArrayList<>();
             firstSectionFields.add(new BootstrapField("firstField", "firstFieldDescription"));
             firstSectionFields.add(new BootstrapField("secondField", "secondFieldDescription"));
+            firstSectionFields.add(new BootstrapField("thirdField", "asdsadsa", true, "multiple", Sets.newHashSet("a",
+                    "sadasdasd", "asdasdasdasdasdC")));
 
-            List<BootstrapField> secondSectionFields = new ArrayList<>();
-            secondSectionFields.add(new BootstrapField("firstField", "first hint"));
-            secondSectionFields.add(new BootstrapField("secondField", "hint"));
-
-            List<BootstrapField> thirdSectionFields = new ArrayList<>();
-            thirdSectionFields.add(new BootstrapField("firstField", "hint"));
-            thirdSectionFields.add(new BootstrapField("secondField", "second hint"));
+//            List<BootstrapField> secondSectionFields = new ArrayList<>();
+//            secondSectionFields.add(new BootstrapField("firstField", "first hint"));
+//            secondSectionFields.add(new BootstrapField("secondField", "hint"));
+//
+//            List<BootstrapField> thirdSectionFields = new ArrayList<>();
+//            thirdSectionFields.add(new BootstrapField("firstField", "hint"));
+//            thirdSectionFields.add(new BootstrapField("secondField", "second hint"));
 
             ArrayList<BootstrapSection> sections = new ArrayList<>();
             sections.add(new BootstrapSection("firstSection", "description", firstSectionFields));
-            sections.add(new BootstrapSection("secondSectionFields", "description", secondSectionFields));
-            sections.add(new BootstrapSection("thirdSectionFields", "description", thirdSectionFields));
+//            sections.add(new BootstrapSection("secondSectionFields", "description", secondSectionFields));
+//            sections.add(new BootstrapSection("thirdSectionFields", "description", thirdSectionFields));
 
             return sections;
         }

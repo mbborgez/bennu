@@ -35,7 +35,7 @@
 				<div ng-repeat="section in sections">
 
 					<ng-form name="{{section.name}}">
-						<div ng-show="getCurrentStep() == section">
+						<div class="wizardSection" ng-show="getCurrentStep() == section">
 							
 								<fieldset>
 									<legend>{{section.name}}<span class="badge">{{currentStepNumber + 1}}</span></legend>
@@ -48,7 +48,7 @@
 											<ng-form name="{{field.name}}" class="row" >
 
 												<label for="input" class="col-sm-2 control-label">{{field.name}}:</label>
-											
+												
 												<div class="col-sm-10">
 													<input name="input"
 															class="form-control"
@@ -56,35 +56,45 @@
 															ng-class="{error: {{hasError(section,field)}}}" 
 															placeholder="{{field.hint}}" 
 															ng-required="{{field.isMandatory}}"
+															ng-show="{{field.validValues.length == 0}}"
 															ng-model="field.value" />
+
+													<select name="inputX"
+															class="form-control"
+															placeholder="{{field.hint}}" 
+															ng-required="{{field.isMandatory}}"
+															ng-show="{{field.validValues.length > 0}}"
+															ng-model="v"
+															ng-options="v for v in field.validValues">
+														<option value="">-- choose one --</option>
+													</select>
+															
 
 													<span class="help-block" ng-show="{{field.name}}.input.$dirty && {{field.name}}.input.$error.required">The field <strong>{{field.name}}</strong> is mandatory.</span>
 												</div>
 												
 											</ng-form>
-											
 
 										</div>
 
 									</div>
 								</fieldset>
 
-								<ul class="pager">
-									<li ng-class="{disabled: $first}" class="previous">
-										<a ng-click="previousStep()">Previous</a>
-									</li>
-									<li ng-class="{disabled: $last}" class="next" ng-show="!$last">
-										<a ng-click="nextStep()">Next</a>
-									</li>
-									<li ng-class="{disabled: !$last}" class="next" ng-show="$last">
-										<a ng-click="submitWizard()" class="primary">Submit</a>
-									</li>
-								</ul>
-
 						</div>
 
 					</ng-form>
 
+					<ul class="pager">
+						<li ng-class="{disabled: $first}" class="previous">
+							<a ng-click="previousStep()">Previous</a>
+						</li>
+						<li ng-class="{disabled: $last}" class="next" ng-show="!$last">
+							<a ng-click="nextStep()">Next</a>
+						</li>
+						<li ng-class="{disabled: !$last}" class="next" ng-show="$last">
+							<a ng-click="submitWizard()" class="primary">Submit</a>
+						</li>
+					</ul>
 				</div>
 			</form>
 
@@ -113,6 +123,13 @@ input.ng-invalid.ng-dirty {
 .error {
 	border: 1px solid #dca7a7;
 }
+
+.wizardSection.ng-hide-add, .wizardSection.ng-hide-remove {
+  transition:0.5s linear all;
+  display:block!important;
+}
+
+
 
 </style>
 
