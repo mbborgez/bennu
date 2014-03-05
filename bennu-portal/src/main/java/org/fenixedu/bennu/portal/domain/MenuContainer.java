@@ -130,6 +130,19 @@ public final class MenuContainer extends MenuContainer_Base {
     }
 
     /**
+     * Returns an {@link Iterable} containing all the child {@link MenuContainer}s of this container, that are available to the
+     * current user.
+     */
+    public Iterable<MenuContainer> getAvailableChildContainers() {
+        return FluentIterable.from(getChildSet()).filter(MenuContainer.class).filter(new Predicate<MenuContainer>() {
+            @Override
+            public boolean apply(MenuContainer container) {
+                return container.isAvailable(Authenticate.getUser()) && container.isVisible();
+            }
+        }).toSortedList(Ordering.natural());
+    }
+
+    /**
      * Deletes this container, as well as all its children.
      */
     @Override
