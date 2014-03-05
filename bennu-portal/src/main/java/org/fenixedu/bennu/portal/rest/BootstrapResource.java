@@ -12,6 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 import org.fenixedu.bennu.portal.servlet.BootstrapError;
 import org.fenixedu.bennu.portal.servlet.BootstrapField;
@@ -22,7 +23,6 @@ import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 
 @Path("/bennu-portal/bootstrap")
 public class BootstrapResource extends BennuRestResource {
@@ -39,11 +39,7 @@ public class BootstrapResource extends BennuRestResource {
             getPortalBootstrapper().boostrap(sections);
             return Response.status(200).build();
         } catch (BootstrapError e) {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("sectionName", e.getSectionName());
-            jsonObject.addProperty("fieldName", e.getFieldName());
-            jsonObject.addProperty("message", e.getMessage());
-            return Response.status(500).entity(jsonObject.toString()).build();
+            return Response.status(500).entity(e.toJson()).build();
         }
     }
 
@@ -62,30 +58,60 @@ public class BootstrapResource extends BennuRestResource {
         @Override
         public List<BootstrapSection> getBootstrapSections() {
             List<BootstrapField> firstSectionFields = new ArrayList<>();
-            firstSectionFields.add(new BootstrapField("firstField", "firstFieldDescription"));
-            firstSectionFields.add(new BootstrapField("secondField", "secondFieldDescription"));
-            firstSectionFields.add(new BootstrapField("thirdField", "asdsadsa", true, "multiple", Sets.newHashSet("a",
+            firstSectionFields.add(new BootstrapField("University Name", "Example University"));
+            firstSectionFields.add(new BootstrapField("University Acronym", "EU"));
+            firstSectionFields.add(new BootstrapField("School Name", "Example Engineering School"));
+            firstSectionFields.add(new BootstrapField("School Acronym", "EES"));
+
+            firstSectionFields.add(new BootstrapField("School Name", "asdsadsa", true, "multiple", Sets.newHashSet("a",
                     "sadasdasd", "asdasdasdasdasdC")));
 
-//            List<BootstrapField> secondSectionFields = new ArrayList<>();
-//            secondSectionFields.add(new BootstrapField("firstField", "first hint"));
-//            secondSectionFields.add(new BootstrapField("secondField", "hint"));
-//
-//            List<BootstrapField> thirdSectionFields = new ArrayList<>();
-//            thirdSectionFields.add(new BootstrapField("firstField", "hint"));
-//            thirdSectionFields.add(new BootstrapField("secondField", "second hint"));
+            List<BootstrapField> secondSectionFields = new ArrayList<>();
+            secondSectionFields.add(new BootstrapField("School Domain", "ees.example.edu"));
+            secondSectionFields.add(new BootstrapField("School URL", "http://www.ist.ut.pt"));
+            secondSectionFields.add(new BootstrapField("School Email Domain", "ist.utl.pt"));
+            secondSectionFields.add(new BootstrapField("Installation Name", "Fenix"));
+            secondSectionFields.add(new BootstrapField("Installation Domain", "fenixedu.ees"));
+
+            List<BootstrapField> thirdSectionFields = new ArrayList<>();
+            thirdSectionFields.add(new BootstrapField("Username", "admin"));
+            thirdSectionFields.add(new BootstrapField("Name", "FenixEdu Administrator"));
+            thirdSectionFields.add(new BootstrapField("Email", "admin@ist.utl.pt"));
+
+            thirdSectionFields.add(new BootstrapField("Password", "Your password"));
+            thirdSectionFields.add(new BootstrapField("Password (again)", "Your password"));
+
+            thirdSectionFields.add(new BootstrapField("thirdField", "asdsadsa", true, "multiple", Sets.newHashSet(
+                    "Miguel Borges", "sadasdasdsadasdasdsadasdasdsadasdasd", "asdasdasdasdasdC")));
 
             ArrayList<BootstrapSection> sections = new ArrayList<>();
-            sections.add(new BootstrapSection("firstSection", "description", firstSectionFields));
-//            sections.add(new BootstrapSection("secondSectionFields", "description", secondSectionFields));
-//            sections.add(new BootstrapSection("thirdSectionFields", "description", thirdSectionFields));
+            sections.add(new BootstrapSection("School setup",
+                    "Let's setup your school. You need to set up your university and school name.", firstSectionFields));
+            sections.add(new BootstrapSection("Application information",
+                    "Next we need to setup the domain information about your applicatinos.", secondSectionFields));
+            sections.add(new BootstrapSection("Account", "Now we need to create an administrator account.", thirdSectionFields));
 
             return sections;
         }
 
         @Override
         public void boostrap(List<BootstrapSection> sections) throws BootstrapError {
-            throw new BootstrapError("firstSection", "firstField", "STUPID ERROR");
+            BootstrapSection account = null;
+            for (BootstrapSection section : sections) {
+                if (StringUtils.equals(section.getName(), "Account")) {
+                    account = section;
+                }
+            }
+
+            String pass = account.getField("Password").getValue();
+            String retypedPass = account.getField("Password (again)").getValue();
+
+            if (StringUtils.isEmpty(pass) || StringUtils.isEmpty(retypedPass)) {
+                throw new BootstrapError(account, account.getField("Password"), "Please enter a password");
+            }
+            if (!StringUtils.equals(pass, retypedPass)) {
+                throw new BootstrapError(account, account.getField("Password (again)"), "Passwords don't match");
+            }
         }
 
     }

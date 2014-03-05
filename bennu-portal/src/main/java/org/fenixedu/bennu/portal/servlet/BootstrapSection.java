@@ -2,6 +2,8 @@ package org.fenixedu.bennu.portal.servlet;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 public class BootstrapSection {
 
     private final String name;
@@ -24,6 +26,15 @@ public class BootstrapSection {
 
     public List<BootstrapField> getFields() {
         return fields;
+    }
+
+    public BootstrapField getField(String fieldId) {
+        for (BootstrapField field : getFields()) {
+            if (StringUtils.equals(field.getName(), fieldId)) {
+                return field;
+            }
+        }
+        return null;
     }
 
 }

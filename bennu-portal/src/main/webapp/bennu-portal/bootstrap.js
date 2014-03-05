@@ -17,35 +17,27 @@ function BootstrapCtrl($scope, $http) {
 			}).
 			error(function(data, status, headers, config) {
 				$scope.error = data;
-				$scope.currentStepNumber = findSectionNumber(data.sectionName, data.fieldName);
-				showError(data);
+
+				$scope.currentStepNumber = findSectionNumber(data.section, data.field);
 			});
 	};
 
-	function findSectionNumber(sectionName, fieldName) {
-		$.each($scope.sections, function(scopeIndex, section){
-			if(section.name == sectionName) {
-				$.each(section.fields, function(fieldIndex, field) {
-					if(field.name==fieldName) {
-						return scopeIndex;
-					}
-				})
+	function findSectionNumber(originalSection, originalField) {
+		var result = 0;
+		$.each($scope.sections, function(sectionIndex, section) {
+			if(angular.equals(originalSection.name, section.name)) {
+				result = sectionIndex;
 			}
 		});
-		return 0;
+		return result;
 	}
-
+	
 	$scope.hasAnyError = function() {
 		return $scope.error != null;
 	}
 
 	$scope.hasError = function (section, field) {
 		return $scope.error != null && $scope.error.sectionName == section.name && $scope.error.fieldName == field.name;
-	}
-
-	function showError(error) {
-		console.log($scope.bootstrapForm);
-		$scope.bootstrapForm.$setValidity(false);
 	}
 
 	$scope.hasSections = function() {

@@ -39,8 +39,12 @@
 							
 								<fieldset>
 									<legend>{{section.name}}<span class="badge">{{currentStepNumber + 1}}</span></legend>
-									
 									<div class="alert alert-danger bs-alert-old-docs" ng-show="hasAnyError()">{{error.message}}</div>
+
+									<tt>{{section.description}}</tt>
+									
+									<br></br>
+
 									
 									<div ng-repeat="field in section.fields" class="control-group">
 										
@@ -59,7 +63,7 @@
 															ng-show="{{field.validValues.length == 0}}"
 															ng-model="field.value" />
 
-													<select name="inputX"
+													<select name="input"
 															class="form-control"
 															placeholder="{{field.hint}}" 
 															ng-required="{{field.isMandatory}}"
@@ -68,9 +72,9 @@
 															ng-options="v for v in field.validValues">
 														<option value="">-- choose one --</option>
 													</select>
-															
-
+<!--
 													<span class="help-block" ng-show="{{field.name}}.input.$dirty && {{field.name}}.input.$error.required">The field <strong>{{field.name}}</strong> is mandatory.</span>
+-->
 												</div>
 												
 											</ng-form>
@@ -80,21 +84,22 @@
 									</div>
 								</fieldset>
 
+								<ul class="pager">
+									<li ng-class="{disabled: $first}" class="previous">
+										<a ng-click="previousStep()">Previous</a>
+									</li>
+									<li ng-class="{disabled: $last}" class="next" ng-show="!$last">
+										<a ng-click="nextStep()">Next</a>
+									</li>
+									<li ng-class="{disabled: !$last}" class="next" ng-show="$last">
+										<a ng-click="submitWizard()" class="primary">Submit</a>
+									</li>
+								</ul>
 						</div>
 
 					</ng-form>
 
-					<ul class="pager">
-						<li ng-class="{disabled: $first}" class="previous">
-							<a ng-click="previousStep()">Previous</a>
-						</li>
-						<li ng-class="{disabled: $last}" class="next" ng-show="!$last">
-							<a ng-click="nextStep()">Next</a>
-						</li>
-						<li ng-class="{disabled: !$last}" class="next" ng-show="$last">
-							<a ng-click="submitWizard()" class="primary">Submit</a>
-						</li>
-					</ul>
+
 				</div>
 			</form>
 

@@ -1,30 +1,50 @@
 package org.fenixedu.bennu.portal.servlet;
 
+import com.google.gson.GsonBuilder;
+
 public class BootstrapError extends Exception {
     private static final long serialVersionUID = 1L;
 
-    private String fieldName;
-    private String sectionName;
+    private BootstrapSection section;
+    private BootstrapField field;
 
-    public BootstrapError(String sectionName, String fieldName, String errorMessage) {
+    public BootstrapError(BootstrapSection section, BootstrapField field, String errorMessage) {
         super(errorMessage);
-        this.sectionName = sectionName;
-        this.fieldName = fieldName;
+        this.section = section;
+        this.field = field;
     }
 
-    public String getFieldName() {
-        return fieldName;
+    public BootstrapSection getSection() {
+        return section;
     }
 
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
+    public void setSection(BootstrapSection section) {
+        this.section = section;
     }
 
-    public String getSectionName() {
-        return sectionName;
+    public BootstrapField getField() {
+        return field;
     }
 
-    public void setSectionName(String sectionName) {
-        this.sectionName = sectionName;
+    public void setField(BootstrapField field) {
+        this.field = field;
     }
+
+    public String toJson() {
+        BootstrapErrorBean bean = new BootstrapErrorBean(getSection(), getField(), getMessage());
+        return new GsonBuilder().serializeNulls().create().toJson(bean);
+    }
+
+    private class BootstrapErrorBean {
+        private BootstrapSection section;
+        private BootstrapField field;
+        private String message;
+
+        BootstrapErrorBean(BootstrapSection section, BootstrapField field, String message) {
+            this.section = section;
+            this.field = field;
+            this.message = message;
+        }
+    }
+
 }
