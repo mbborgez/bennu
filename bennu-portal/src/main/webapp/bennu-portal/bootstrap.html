@@ -72,9 +72,7 @@
 															ng-options="v for v in field.validValues">
 														<option value="">-- choose one --</option>
 													</select>
-<!--
-													<span class="help-block" ng-show="{{field.name}}.input.$dirty && {{field.name}}.input.$error.required">The field <strong>{{field.name}}</strong> is mandatory.</span>
--->												
+													
 													<div class="help-block" ng-show="field.hasError">{{error.message}}</div>
 												</div>
 												
@@ -110,6 +108,13 @@
 
 <style type="text/css">
 
+.container {
+	margin-top: 10px;
+	padding-top: 10px;
+	padding-bottom: 5px;
+	background: rgba(245,245,245,0.88);
+	box-shadow: 0 0 2px #999;
+}
 .alert {
 	border: none;
 }

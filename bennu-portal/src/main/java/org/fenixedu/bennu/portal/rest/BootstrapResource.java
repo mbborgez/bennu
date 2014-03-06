@@ -37,6 +37,7 @@ public class BootstrapResource extends BennuRestResource {
     public Response create(final String json) {
         List<BootstrapSection> sections = new Gson().fromJson(json, INPUT_TYPE);
         try {
+            ensureMandatoryFields(sections);
             getPortalBootstrapper().boostrap(sections);
             return Response.status(200).build();
         } catch (BootstrapError e) {
@@ -52,6 +53,17 @@ public class BootstrapResource extends BennuRestResource {
 
     private PortalBootstrapper getPortalBootstrapper() {
         return new DefaultPortalBootstrapper();
+    }
+
+    private void ensureMandatoryFields(List<BootstrapSection> sections) throws BootstrapError {
+        for (BootstrapSection section : sections) {
+            for (BootstrapField field : section.getFields()) {
+                if (field.isMandatory() && StringUtils.isEmpty(field.getValue())) {
+                    String errorMessage = String.format("The field %s is mandatory.", field.getName());
+                    throw new BootstrapError(section, field, errorMessage);
+                }
+            }
+        }
     }
 
     public static class DefaultPortalBootstrapper implements PortalBootstrapper {
@@ -104,8 +116,11 @@ public class BootstrapResource extends BennuRestResource {
             String pass = account.getField("Password").getValue();
             String retypedPass = account.getField("Password (again)").getValue();
 
-            if (StringUtils.isEmpty(pass) || StringUtils.isEmpty(retypedPass)) {
+            if (StringUtils.isEmpty(pass)) {
                 throw new BootstrapError(account, account.getField("Password"), "Please enter a password");
+            }
+            if (StringUtils.isEmpty(retypedPass)) {
+                throw new BootstrapError(account, account.getField("Password (again)"), "Please retype your password");
             }
             if (!StringUtils.equals(pass, retypedPass)) {
                 throw new BootstrapError(account, account.getField("Password (again)"), "Passwords don't match");
