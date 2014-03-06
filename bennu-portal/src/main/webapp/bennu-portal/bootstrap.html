@@ -68,7 +68,7 @@
 															placeholder="{{field.hint}}" 
 															ng-required="{{field.isMandatory}}"
 															ng-show="{{field.validValues.length > 0}}"
-															ng-model="v"
+															ng-model="field.value"
 															ng-options="v for v in field.validValues">
 														<option value="">-- choose one --</option>
 													</select>
