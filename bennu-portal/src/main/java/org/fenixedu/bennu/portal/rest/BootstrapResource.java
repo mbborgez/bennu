@@ -16,10 +16,11 @@ import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 import org.fenixedu.bennu.portal.servlet.BootstrapError;
 import org.fenixedu.bennu.portal.servlet.BootstrapField;
+import org.fenixedu.bennu.portal.servlet.BootstrapField.FieldType;
 import org.fenixedu.bennu.portal.servlet.BootstrapSection;
 import org.fenixedu.bennu.portal.servlet.PortalBootstrapper;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -63,9 +64,6 @@ public class BootstrapResource extends BennuRestResource {
             firstSectionFields.add(new BootstrapField("School Name", "Example Engineering School"));
             firstSectionFields.add(new BootstrapField("School Acronym", "EES"));
 
-            firstSectionFields.add(new BootstrapField("School Name", "asdsadsa", true, "multiple", Sets.newHashSet("a",
-                    "sadasdasd", "asdasdasdasdasdC")));
-
             List<BootstrapField> secondSectionFields = new ArrayList<>();
             secondSectionFields.add(new BootstrapField("School Domain", "ees.example.edu"));
             secondSectionFields.add(new BootstrapField("School URL", "http://www.ist.ut.pt"));
@@ -76,12 +74,12 @@ public class BootstrapResource extends BennuRestResource {
             List<BootstrapField> thirdSectionFields = new ArrayList<>();
             thirdSectionFields.add(new BootstrapField("Username", "admin"));
             thirdSectionFields.add(new BootstrapField("Name", "FenixEdu Administrator"));
-            thirdSectionFields.add(new BootstrapField("Email", "admin@ist.utl.pt"));
+            thirdSectionFields.add(new BootstrapField("Email", "admin@ist.utl.pt", true, FieldType.EMAIL));
 
-            thirdSectionFields.add(new BootstrapField("Password", "Your password"));
-            thirdSectionFields.add(new BootstrapField("Password (again)", "Your password"));
+            thirdSectionFields.add(new BootstrapField("Password", "Your password", true, FieldType.PASSWORD));
+            thirdSectionFields.add(new BootstrapField("Password (again)", "Your password", true, FieldType.PASSWORD));
 
-            thirdSectionFields.add(new BootstrapField("thirdField", "asdsadsa", true, "multiple", Sets.newHashSet(
+            thirdSectionFields.add(new BootstrapField("thirdField", "asdsadsa", true, FieldType.SELECT_ONE, Lists.newArrayList(
                     "Miguel Borges", "sadasdasdsadasdasdsadasdasdsadasdasd", "asdasdasdasdasdC")));
 
             ArrayList<BootstrapSection> sections = new ArrayList<>();
