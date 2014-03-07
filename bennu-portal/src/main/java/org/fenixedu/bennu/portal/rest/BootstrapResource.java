@@ -1,6 +1,6 @@
 package org.fenixedu.bennu.portal.rest;
 
-import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -17,27 +17,25 @@ import org.fenixedu.bennu.portal.bootstrap.BootstrapError;
 import org.fenixedu.bennu.portal.bootstrap.BootstrapField;
 import org.fenixedu.bennu.portal.bootstrap.BootstrapSection;
 import org.fenixedu.bennu.portal.bootstrap.PortalBootstrapper;
+import org.fenixedu.bennu.portal.bootstrap.PortalBootstrapperBean;
 import org.fenixedu.bennu.portal.bootstrap.PortalBootstrapperRegistry;
 
-import com.google.common.collect.Lists;
-import com.google.common.reflect.TypeToken;
+import com.google.common.collect.Iterables;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 @Path("/bennu-portal/bootstrap")
 public class BootstrapResource extends BennuRestResource {
-
-    private final Type INPUT_TYPE = new TypeToken<List<BootstrapSection>>() {
-    }.getType();
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(final String json) {
-        List<BootstrapSection> sections = new Gson().fromJson(json, INPUT_TYPE);
+        PortalBootstrapperBean bean = new Gson().fromJson(json, PortalBootstrapperBean.class);
         try {
-            ensureMandatoryFields(sections);
-            getPortalBootstrapper().boostrap(sections);
+            ensureMandatoryFields(bean.getSections());
+            PortalBootstrapper portalBootstrapper = PortalBootstrapperRegistry.getPortalBootstrapper(bean.getKey());
+            portalBootstrapper.boostrap(bean.getSections());
+            PortalBootstrapperRegistry.unregisterBootstrapper(bean.getKey());
             return Response.status(200).build();
         } catch (BootstrapError e) {
             return Response.status(500).entity(e.toJson()).build();
@@ -46,12 +44,10 @@ public class BootstrapResource extends BennuRestResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getSections() {
-        return new GsonBuilder().serializeNulls().create().toJson(getPortalBootstrapper().getBootstrapSections());
-    }
-
-    private PortalBootstrapper getPortalBootstrapper() {
-        return Lists.newArrayList(PortalBootstrapperRegistry.getPortalBootstrappers().values()).get(0);
+    public String getPortalBootstrapper() {
+        Collection<PortalBootstrapper> portalBootstrappers = PortalBootstrapperRegistry.getPortalBootstrappers();
+        PortalBootstrapper bootstrapper = Iterables.getFirst(portalBootstrappers, null);
+        return bootstrapper != null ? new PortalBootstrapperBean(bootstrapper).toJson() : null;
     }
 
     private void ensureMandatoryFields(List<BootstrapSection> sections) throws BootstrapError {

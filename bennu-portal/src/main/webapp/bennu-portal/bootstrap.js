@@ -1,22 +1,25 @@
+
 function BootstrapCtrl($scope, $http) {
 	
-	$scope.sections = null;
-	
+	$scope.bootstrapper = null;
+
 	$scope.currentStepNumber = 0;
 
 	$scope.error = null;
 	
 	$http.get('api/bennu-portal/bootstrap').success(function(data, status, headers, config) {
-		$scope.sections = data;
+		$scope.bootstrapper = data;
 	});
 
 	$scope.submitWizard = function() {
 		clearErrors();
-		$http.post('api/bennu-portal/bootstrap', $scope.sections).
+
+		$http.post('api/bennu-portal/bootstrap', $scope.bootstrapper).
 			success(function(data, status, headers, config) {
-				console.log("SUCCESS");
+				window.location.reload(false);
 			}).
 			error(function(data, status, headers, config) {
+				console.log(data);
 				$scope.error = data;
 				findField(data.section, data.field).hasError = true;
 				$scope.currentStepNumber = findSectionNumber(data.section, data.field);
@@ -25,7 +28,7 @@ function BootstrapCtrl($scope, $http) {
 
 	function findSectionNumber(originalSection, originalField) {
 		var result = 0;
-		$.each($scope.sections, function(sectionIndex, section) {
+		$.each($scope.bootstrapper.sections, function(sectionIndex, section) {
 			if(angular.equals(originalSection.name, section.name)) {
 				result = sectionIndex;
 			}
@@ -35,7 +38,7 @@ function BootstrapCtrl($scope, $http) {
 
 	function findField(originalSection, originalField) {
 		var result = null;
-		$.each($scope.sections, function(sectionIndex, section) {
+		$.each($scope.bootstrapper.sections, function(sectionIndex, section) {
 			$.each(section.fields, function(fieldIndex, field){
 				if(angular.equals(originalSection.name, section.name) && angular.equals(originalField.name, field.name)) {
 					result = field;
@@ -46,7 +49,7 @@ function BootstrapCtrl($scope, $http) {
 	}
 
 	function clearErrors() {
-		$.each($scope.sections, function(sectionIndex, section){
+		$.each($scope.bootstrapper.sections, function(sectionIndex, section){
 			$.map(section.fields, function(field, fieldIndex) {
 				field.hasError = false;
 			})
@@ -62,15 +65,15 @@ function BootstrapCtrl($scope, $http) {
 	}
 
 	$scope.hasSections = function() {
-		return $scope.sections!=null && $scope.sections.length!=0;
+		return $scope.bootstrapper!=null && $scope.bootstrapper.sections!=null && $scope.bootstrapper.sections.length!=0;
 	};
 
 	$scope.getCurrentStep = function() {
-		return $scope.sections[$scope.currentStepNumber];
+		return $scope.bootstrapper.sections[$scope.currentStepNumber];
 	};
 
 	$scope.nextStep = function() {
-		if($scope.currentStepNumber<$scope.sections.length) {
+		if($scope.currentStepNumber<$scope.bootstrapper.sections.length) {
 			$scope.currentStepNumber++;
 		}
 	};
@@ -84,22 +87,3 @@ function BootstrapCtrl($scope, $http) {
 };
 
 
-var app = angular.module('bootstrap-app', []);
-
-app.directive('validate-field', function() {
-    return {
-        require: 'ngModel',
-        link: function($scope, $element, $attrs, $ctrl) {
-            $ctrl.$parsers.unshift(function(viewValue) {
-            	console.log($element, $ctrl);
-                /*if(angular.equals($scope.error.field.name, $ctrl.name)) {
-                    $ctrl.$setValidity('pwd', true);
-                    return viewValue;
-                } else {
-                    $ctrl.$setValidity('pwd', false);                    
-                    return undefined;
-                }*/
-        	});
-        }
-    };
-});

@@ -1,4 +1,4 @@
-<html ng-app>
+<html ng-app ng-controller="BootstrapCtrl">
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -22,17 +22,16 @@
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
-	<title>Bootstrap</title>
+	<title>{{bootstrapper.name}}</title>
 </head>
-  <div id="modal"></div>
-<div class="container">
-	<h1>Bootstrap</h1>
+<div class="container" >
+	<h1>{{bootstrapper.name}}</h1>
 
-	<div name="bootstrapWizard" ng-controller="BootstrapCtrl">
+	<div name="bootstrapWizard" >
 		<div ng-show="hasSections()">
 
 			<form name="bootstrapForm" ng-submit="submitWizard()" novalidate class="form-horizontal" role="form">	
-				<div ng-repeat="section in sections">
+				<div ng-repeat="section in bootstrapper.sections">
 
 					<ng-form name="{{section.name}}">
 						<div class="wizardSection" ng-show="getCurrentStep() == section">
@@ -45,7 +44,6 @@
 									
 									<br></br>
 
-									
 									<div ng-repeat="field in section.fields" class="control-group">
 										
 										<div class="form-group">
@@ -140,8 +138,6 @@ input.ng-invalid.ng-dirty {
   transition:0.5s linear all;
   display:block!important;
 }
-
-
 
 </style>
 

@@ -1,5 +1,6 @@
 package org.fenixedu.bennu.portal.bootstrap;
 
+import java.util.Collection;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
@@ -46,8 +47,8 @@ public class PortalBootstrapperRegistry {
      * @return
      *         all the {@link PortalBootstrapper} and the respective keys.
      */
-    public static Map<String, PortalBootstrapper> getPortalBootstrappers() {
-        return portalBootstrappers;
+    public static Collection<PortalBootstrapper> getPortalBootstrappers() {
+        return portalBootstrappers.values();
     }
 
     /**
