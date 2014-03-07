@@ -1,4 +1,4 @@
-package org.fenixedu.bennu.portal.servlet;
+package org.fenixedu.bennu.portal.bootstrap;
 
 import java.util.List;
 
@@ -18,5 +18,15 @@ public interface PortalBootstrapper {
      * This method will be called with all the {@link BoostrapSection} with required values
      */
     public void boostrap(List<BootstrapSection> sections) throws BootstrapError;
+
+    /**
+     * Returns the name of the Portal Bootstrapper.
+     */
+    public String getName();
+
+    /**
+     * Returns a unique key for the portal
+     */
+    public String getKey();
 
 }

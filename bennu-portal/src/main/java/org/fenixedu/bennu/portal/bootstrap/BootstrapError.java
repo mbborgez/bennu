@@ -1,4 +1,4 @@
-package org.fenixedu.bennu.portal.servlet;
+package org.fenixedu.bennu.portal.bootstrap;
 
 import com.google.gson.GsonBuilder;
 
