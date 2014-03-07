@@ -67,4 +67,20 @@ public class PortalBootstrapperRegistry {
         }
         return bootstrapper;
     }
+
+    /**
+     * Unregisters a {@link PortalBootstrapper} with a given key.
+     * 
+     * @param key
+     *            The key of the PortalBootstrapper to unregister
+     * @throws UnsupportedOperationException
+     *             If no bootstrapper is found for the given key
+     */
+    public static void unregisterBootstrapper(String key) {
+        PortalBootstrapper bootstrapper = portalBootstrappers.get(key);
+        if (bootstrapper == null) {
+            throw new UnsupportedOperationException("No bootstrapper for key " + key);
+        }
+        portalBootstrappers.remove(key);
+    }
 }
