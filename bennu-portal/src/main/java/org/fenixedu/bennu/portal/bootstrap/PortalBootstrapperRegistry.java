@@ -1,87 +1,50 @@
 package org.fenixedu.bennu.portal.bootstrap;
 
-import java.util.Collection;
+import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Set;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
-/**
- * Central place for {@link PortalBootstrapper} to register themselves.
- * 
- * Upon application startup, the portals that need to be bootstrapped must register a Portal Bootstrapper here.
- * 
- **/
 public class PortalBootstrapperRegistry {
 
-    private static Map<String, PortalBootstrapper> portalBootstrappers = Maps.newConcurrentMap();
+    private static Map<Class<?>, Iterable<Method>> bootstrapperMethods;
 
-    /**
-     * Registers a new {@link PortalBootstrapper}.
-     * 
-     * @param type
-     *            The type of the PortalBootstrapper to register
-     * @throws IllegalArgumentException
-     *             If another bootstrapper with the same key is already registered.
-     */
-    public static void registerBootstrapper(Class<PortalBootstrapper> type) {
-        PortalBootstrapper bootstrapper = null;
-
-        try {
-            bootstrapper = type.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException("Impossible to create a new instance for the bootstrapper " + type.getName());
-        }
-
-        if (portalBootstrappers.containsKey(bootstrapper.getKey())) {
-            throw new IllegalArgumentException("Another PortalBootstrapper with key " + bootstrapper.getKey()
-                    + " is already registered");
-        }
-
-        portalBootstrappers.put(bootstrapper.getKey(), bootstrapper);
+    public static void registerBootstrapper(Class<?> bootstrapper, Iterable<Method> bootstrapMethods) {
+        bootstrapperMethods.put(bootstrapper, bootstrapMethods);
     }
 
-    /**
-     * Returns all the {@link PortalBootstrapper} and the respective keys.
-     * 
-     * @return
-     *         all the {@link PortalBootstrapper} and the respective keys.
-     */
-    public static Collection<PortalBootstrapper> getPortalBootstrappers() {
-        return portalBootstrappers.values();
+    public static Set<Class<?>> getBootstrappers() {
+        return bootstrapperMethods.keySet();
     }
 
-    /**
-     * Returns the {@link PortalBootstrapper} for the given key.
-     * 
-     * @param key
-     *            The portal key
-     * @return
-     *         The {@link PortalBootstrapper} for the given key
-     * @throws UnsupportedOperationException
-     *             If no bootstrapper is found for the given key
-     */
-    public static PortalBootstrapper getPortalBootstrapper(String key) {
-        PortalBootstrapper bootstrapper = portalBootstrappers.get(key);
-        if (bootstrapper == null) {
-            throw new UnsupportedOperationException("No bootstrapper for key " + key);
-        }
-        return bootstrapper;
+    public static Iterable<Method> getBootstrapMethods(Class<?> bootstapper) {
+        return bootstrapperMethods.get(bootstapper);
     }
 
-    /**
-     * Unregisters a {@link PortalBootstrapper} with a given key.
-     * 
-     * @param key
-     *            The key of the PortalBootstrapper to unregister
-     * @throws UnsupportedOperationException
-     *             If no bootstrapper is found for the given key
-     */
-    public static void unregisterBootstrapper(String key) {
-        PortalBootstrapper bootstrapper = portalBootstrappers.get(key);
-        if (bootstrapper == null) {
-            throw new UnsupportedOperationException("No bootstrapper for key " + key);
+    public static Set<Method> getBootstrapMethods() {
+        Set<Method> result = Sets.newHashSet();
+        for (Iterable<Method> methods : bootstrapperMethods.values()) {
+            for (Method method : methods) {
+                result.add(method);
+            }
         }
-        portalBootstrappers.remove(key);
+        return result;
+    }
+
+    public static Set<Class<?>> getSections() {
+        Set<Class<?>> result = Sets.newHashSet();
+        for (Method method : getBootstrapMethods()) {
+            result.addAll(Sets.newHashSet(method.getParameterTypes()));
+        }
+        return result;
+    }
+
+    public static Set<Class<?>> getSections(Class<?> bootstrapper) {
+        Set<Class<?>> result = Sets.newHashSet();
+        for (Method method : getBootstrapMethods(bootstrapper)) {
+            result.addAll(Sets.newHashSet(method.getParameterTypes()));
+        }
+        return result;
     }
 }
