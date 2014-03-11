@@ -18,7 +18,8 @@ public class FieldBean {
         this.fieldType = fieldType;
     }
 
-    public FieldBean(Field fieldAnnotation) {
+    public FieldBean(Field field) {
+        this(field.name(), field.validValues(), field.hint(), field.isMandatory(), field.fieldType());
     }
 
     public String getName() {

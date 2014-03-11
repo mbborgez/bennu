@@ -1,59 +1,84 @@
 
 function BootstrapCtrl($scope, $http) {
 	
-	$scope.bootstrapper = null;
+	$scope.bootstrappers = null;
 
 	$scope.currentStepNumber = 0;
-
+	
+	$scope.currentBootstrapperNumber = 0;
+	
 	$scope.error = null;
 	
 	$http.get('api/bennu-portal/bootstrap').success(function(data, status, headers, config) {
-		$scope.bootstrapper = data;
+		$scope.bootstrappers = data;
 	});
 
 	$scope.submitWizard = function() {
 		clearErrors();
-
-		$http.post('api/bennu-portal/bootstrap', $scope.bootstrapper).
+		
+		$http.post('api/bennu-portal/bootstrap', allFields()).
 			success(function(data, status, headers, config) {
-				window.location.reload(false);
+				console.log("success");
 			}).
 			error(function(data, status, headers, config) {
-				console.log(data);
 				$scope.error = data;
-				findField(data.section, data.field).hasError = true;
-				$scope.currentStepNumber = findSectionNumber(data.section, data.field);
+				if(data instanceof Object) {
+					findField(data.fieldName).hasError = true;
+					$scope.currentStepNumber = findSectionNumber(data.fieldName);
+				}
 			});
 	};
 
-	function findSectionNumber(originalSection, originalField) {
+	function allFields() {
+		var fields = new Object();
+		$.each($scope.bootstrappers, function(bootstrapperIndex, bootstrapper){
+			$.each(bootstrapper.sections, function(sectionIndex, section){
+				$.each(section.fields, function(fieldIndex, field) {
+					fields[field.name] = field.value;
+				});
+			});
+		});
+		return fields;
+	}
+
+	function findSectionNumber(fieldName) {
 		var result = 0;
-		$.each($scope.bootstrapper.sections, function(sectionIndex, section) {
-			if(angular.equals(originalSection.name, section.name)) {
-				result = sectionIndex;
-			}
+		$.each($scope.bootstrappers, function(bootstrapperIndex, bootstrapper) {
+			$.each(bootstrapper.sections, function(sectionIndex, section) {
+				$.each(section.fields, function(fieldIndex, field){
+					if(angular.equals(fieldName, field.name)) {
+						result = sectionIndex;
+					}
+				});
+			});
 		});
 		return result;
 	}
 
-	function findField(originalSection, originalField) {
+	function findField(fieldName) {
 		var result = null;
-		$.each($scope.bootstrapper.sections, function(sectionIndex, section) {
-			$.each(section.fields, function(fieldIndex, field){
-				if(angular.equals(originalSection.name, section.name) && angular.equals(originalField.name, field.name)) {
-					result = field;
-				}
+		$.each($scope.bootstrappers, function(bootstrapperIndex, bootstrapper) {
+			$.each(bootstrapper.sections, function(sectionIndex, section) {
+				$.each(section.fields, function(fieldIndex, field){
+					if(angular.equals(fieldName, field.name)) {
+						result = field;
+					}
+				});
 			});
 		});
 		return result;
 	}
 
 	function clearErrors() {
-		$.each($scope.bootstrapper.sections, function(sectionIndex, section){
-			$.map(section.fields, function(field, fieldIndex) {
-				field.hasError = false;
-			})
+		$scope.error = null
+		$.each($scope.bootstrappers, function(bootstrapperIndex, bootstrapper) {
+			$.each(bootstrapper.sections, function(sectionIndex, section) {
+				$.each(section.fields, function(fieldIndex, field){
+					field.hasError = false;
+				});
+			});
 		});
+		
 	}
 
 	$scope.hasAnyError = function() {
@@ -65,25 +90,40 @@ function BootstrapCtrl($scope, $http) {
 	}
 
 	$scope.hasSections = function() {
-		return $scope.bootstrapper!=null && $scope.bootstrapper.sections!=null && $scope.bootstrapper.sections.length!=0;
+		return selectedBootstrapper()!=null && selectedBootstrapper().sections!=null && selectedBootstrapper().sections.length!=0;
 	};
 
 	$scope.getCurrentStep = function() {
-		return $scope.bootstrapper.sections[$scope.currentStepNumber];
+		return selectedBootstrapper().sections[$scope.currentStepNumber];
 	};
 
 	$scope.nextStep = function() {
-		if($scope.currentStepNumber<$scope.bootstrapper.sections.length) {
+		if($scope.currentStepNumber < selectedBootstrapper().sections.length) {
 			$scope.currentStepNumber++;
 		}
 	};
 
 	$scope.previousStep = function() {
-		if($scope.currentStepNumber>0) {
+		if($scope.currentStepNumber > 0) {
 			$scope.currentStepNumber--;
 		}
 	};
 
+	function selectedBootstrapper() {
+		return $scope.bootstrappers[$scope.currentBootstrapperNumber];
+	}
+
+	$scope.nextBootstrapper = function() {
+		if($scope.currentBootstrapperNumber < selectedBootstrapper().length) {
+			$scope.currentBootstrapperNumber++;
+		}
+	};
+
+	$scope.previousBootstrapper = function() {
+		if($scope.currentBootstrapperNumber > 0) {
+			$scope.currentBootstrapperNumber--;
+		}
+	};
 };
 
 

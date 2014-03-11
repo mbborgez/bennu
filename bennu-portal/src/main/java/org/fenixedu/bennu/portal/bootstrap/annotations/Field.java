@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 public @interface Field {
     String name();
 
-    String[] validValues();
+    String[] validValues() default {};
 
     String hint() default "";
 

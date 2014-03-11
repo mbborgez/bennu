@@ -24,11 +24,11 @@
 
 	<title>{{bootstrapper.name}}</title>
 </head>
-<div class="container" >
+<div class="container">
 	<h1>{{bootstrapper.name}}</h1>
 
-	<div name="bootstrapWizard" >
-		<div ng-show="hasSections()">
+	<div name="bootstrapWizard">
+		<div ng-show="bootstrappers!=null" ng-repeat="bootstrapper in bootstrappers">
 
 			<form name="bootstrapForm" ng-submit="submitWizard()" novalidate class="form-horizontal" role="form">	
 				<div ng-repeat="section in bootstrapper.sections">
@@ -37,12 +37,19 @@
 						<div class="wizardSection" ng-show="getCurrentStep() == section">
 							
 								<fieldset>
-									<legend>{{section.name}}<span class="badge">{{currentStepNumber + 1}}</span></legend>
+									<legend>
+										<span class="badge">{{currentStepNumber + 1}}</span>
+										<strong>{{bootstrapper.name}}</strong> - {{section.name}}
+									</legend>
 									
 
 									<tt>{{section.description}}</tt>
 									
 									<br></br>
+
+									<div ng-hide="error==null || error.fieldName!=null" class="global-error">
+										{{error.message}}
+									</div>
 
 									<div ng-repeat="field in section.fields" class="control-group">
 										
@@ -55,7 +62,7 @@
 												<div class="col-sm-10">
 													<input name="input"
 															class="form-control"
-															type="{{field.type}}"
+															type="{{field.fieldType}}"
 															placeholder="{{field.hint}}" 
 															ng-required="{{field.isMandatory}}"
 															ng-show="{{field.validValues.length == 0}}"
@@ -68,7 +75,9 @@
 															ng-show="{{field.validValues.length > 0}}"
 															ng-model="field.value"
 															ng-options="v for v in field.validValues">
-														<option value="">-- choose one --</option>
+
+														<option ng-show="{{field.hint==null || field.hint.lenght==0}}" value="">   Choose One   </option>
+														<option ng-show="{{field.hint!=null && field.hint.lenght!=0}}" value="">   {{field.hint}}   </option>
 													</select>
 													
 													<div class="help-block" ng-show="field.hasError">{{error.message}}</div>
@@ -99,7 +108,6 @@
 
 				</div>
 			</form>
-
 		</div>
 	</div>
 </div>
@@ -122,7 +130,7 @@ fieldset {
 }
 
 legend .badge {
-	margin-left: 7px;
+	/*margin-right: 7px;*/
 	vertical-align: middle;
 }
 

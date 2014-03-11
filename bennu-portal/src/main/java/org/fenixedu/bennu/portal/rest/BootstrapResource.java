@@ -13,9 +13,11 @@ import javax.ws.rs.core.Response;
 
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 import org.fenixedu.bennu.portal.bootstrap.PortalBootstrapperRegistry;
+import org.fenixedu.bennu.portal.bootstrap.SectionsBootstrapper;
 import org.fenixedu.bennu.portal.bootstrap.annotations.Bootstrapper;
 import org.fenixedu.bennu.portal.bootstrap.annotations.Field;
 import org.fenixedu.bennu.portal.bootstrap.annotations.Section;
+import org.fenixedu.bennu.portal.bootstrap.beans.BootstrapException;
 import org.fenixedu.bennu.portal.bootstrap.beans.BootstrapperBean;
 import org.fenixedu.bennu.portal.bootstrap.beans.FieldBean;
 import org.fenixedu.bennu.portal.bootstrap.beans.SectionBean;
@@ -23,22 +25,25 @@ import org.fenixedu.bennu.portal.bootstrap.beans.SectionBean;
 import com.google.common.collect.Lists;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 @Path("/bennu-portal/bootstrap")
 public class BootstrapResource extends BennuRestResource {
-
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(final String json) {
         try {
-            System.out.println(json);
-            //TODO - call SectionsBootstrapper.bootstrapAllSections(json);
+            JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
+            System.out.println(jsonObject);
+            SectionsBootstrapper.bootstrapAllSections(jsonObject);
             return Response.status(200).build();
+        } catch (BootstrapException e) {
+            e.printStackTrace();
+            return Response.status(500).entity(e.toJson()).build();
         } catch (Exception e) {
-            JsonObject jsonError = new JsonObject();
-            jsonError.addProperty("message", e.getMessage());
-            return Response.status(500).entity(jsonError.toString()).build();
+            e.printStackTrace();
+            return Response.status(500).entity(new BootstrapException("Internal Error").toJson()).build();
         }
     }
 
@@ -56,9 +61,11 @@ public class BootstrapResource extends BennuRestResource {
             for (Class<?> sectionClass : bootstrapper.sections()) {
                 Section section = sectionClass.getAnnotation(Section.class);
                 SectionBean sectionBean = new SectionBean(section);
-                for (Method method : PortalBootstrapperRegistry.getBootstrapMethods(sectionClass)) {
-                    Field field = method.getAnnotation(Field.class);
-                    sectionBean.addField(new FieldBean(field));
+                for (Method method : sectionClass.getMethods()) {
+                    if (method.isAnnotationPresent(Field.class)) {
+                        Field field = method.getAnnotation(Field.class);
+                        sectionBean.addField(new FieldBean(field));
+                    }
                 }
                 bootstrapperBean.addSection(sectionBean);
             }

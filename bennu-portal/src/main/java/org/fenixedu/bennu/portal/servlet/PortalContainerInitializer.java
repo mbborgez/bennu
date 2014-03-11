@@ -10,17 +10,16 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.HandlesTypes;
 
-import org.fenixedu.bennu.portal.bootstrap.PortalBootstrapper;
 import org.fenixedu.bennu.portal.bootstrap.PortalBootstrapperRegistry;
 import org.fenixedu.bennu.portal.bootstrap.annotations.Bootstrap;
 import org.fenixedu.bennu.portal.bootstrap.annotations.Bootstrapper;
-import org.fenixedu.bennu.portal.bootstrap.annotations.Field;
+import org.fenixedu.bennu.portal.bootstrap.annotations.Section;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-@HandlesTypes(PortalBootstrapper.class)
+@HandlesTypes(Bootstrapper.class)
 public class PortalContainerInitializer implements ServletContainerInitializer {
 
     @Override
@@ -32,7 +31,7 @@ public class PortalContainerInitializer implements ServletContainerInitializer {
                     Iterable<Method> bootstrapMethods = Iterables.filter(allMethods, isBootstrapMethod);
                     for (Method method : bootstrapMethods) {
                         validateStaticMethod(method);
-                        validateBootstrapFields(method.getParameterTypes());
+                        validateBootstrapSections(method.getParameterTypes());
                         method.setAccessible(true);
                     }
                     PortalBootstrapperRegistry.registerBootstrapper(type, bootstrapMethods);
@@ -50,14 +49,16 @@ public class PortalContainerInitializer implements ServletContainerInitializer {
 
     private static void validateStaticMethod(Method bootstrapMethod) {
         if (!Modifier.isStatic(bootstrapMethod.getModifiers())) {
-            throw new UnsupportedOperationException("Bootstrap method must be static");
+            throw new UnsupportedOperationException("Bootstrap method '" + bootstrapMethod.getName() + "' must be static.");
         }
     }
 
-    private static void validateBootstrapFields(Class<?>[] bootstrapFields) {
-        for (Class<?> bootstrapField : bootstrapFields) {
-            if (!bootstrapField.isAnnotationPresent(Field.class)) {
-                throw new UnsupportedOperationException("All the parameters of the method must have a @Section annotation");
+    private static void validateBootstrapSections(Class<?>[] bootstrapSections) {
+        for (Class<?> bootstrapField : bootstrapSections) {
+            if (!bootstrapField.isAnnotationPresent(Section.class)) {
+                throw new UnsupportedOperationException(
+                        "All the parameters of the Bootstrap method must have a @Section annotation but field '"
+                                + bootstrapField.getName() + "' doesn't have it.");
             }
         }
     }
