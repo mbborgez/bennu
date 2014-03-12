@@ -13,12 +13,11 @@ import org.fenixedu.bennu.portal.bootstrap.handlers.SectionInvocationHandler;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
-import com.google.common.base.Joiner;
 import com.google.gson.JsonObject;
 
 public class SectionsBootstrapper {
 
-    public static void bootstrapAllSections(JsonObject json) {
+    public static void bootstrapAll(JsonObject json) {
         validateFields(json);
         Class<?>[] sections = PortalBootstrapperRegistry.getSections().toArray(new Class<?>[0]);
         Object superSection = SectionInvocationHandler.newInstance(json, sections);
@@ -39,7 +38,7 @@ public class SectionsBootstrapper {
     }
 
     private static void validateFields(JsonObject json) {
-        for (Method method : PortalBootstrapperRegistry.getBootstrapFields()) {
+        for (Method method : PortalBootstrapperRegistry.getFields()) {
             Field field = method.getAnnotation(Field.class);
             validateMandatoryField(json, field);
             validateValidValue(json, field);
@@ -50,10 +49,7 @@ public class SectionsBootstrapper {
         boolean isMultipleOption = !ArrayUtils.isEmpty(field.validValues());
         boolean isValidValue = ArrayUtils.contains(field.validValues(), json.get(field.name()).getAsString());
         if (isMultipleOption && !isValidValue) {
-            String validValues = Joiner.on(", ").join(field.validValues());
-            String errorMessage =
-                    String.format("Invalid value for field '%s', please enter a valid value ( %s )", field.name(), validValues);
-            throw new BootstrapException(field.name(), errorMessage);
+            throw new BootstrapException(field.name(), "Invalid value for field '" + field.name() + "'");
         }
     }
 

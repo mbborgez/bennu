@@ -10,6 +10,7 @@ function BootstrapCtrl($scope, $http) {
 	$scope.error = null;
 	
 	$http.get('api/bennu-portal/bootstrap').success(function(data, status, headers, config) {
+		console.log(data);
 		$scope.bootstrappers = data;
 	});
 

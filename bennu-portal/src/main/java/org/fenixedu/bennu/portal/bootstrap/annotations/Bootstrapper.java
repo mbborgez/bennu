@@ -13,4 +13,6 @@ public @interface Bootstrapper {
     String name();
 
     String description() default "";
+
+    Class<?>[] after() default {};
 }

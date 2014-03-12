@@ -36,7 +36,7 @@ public class BootstrapResource extends BennuRestResource {
         try {
             JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
             System.out.println(jsonObject);
-            SectionsBootstrapper.bootstrapAllSections(jsonObject);
+            SectionsBootstrapper.bootstrapAll(jsonObject);
             return Response.status(200).build();
         } catch (BootstrapException e) {
             e.printStackTrace();
@@ -58,20 +58,59 @@ public class BootstrapResource extends BennuRestResource {
         for (Class<?> bootstrapperClass : PortalBootstrapperRegistry.getBootstrappers()) {
             Bootstrapper bootstrapper = bootstrapperClass.getAnnotation(Bootstrapper.class);
             BootstrapperBean bootstrapperBean = new BootstrapperBean(bootstrapper);
-            for (Class<?> sectionClass : bootstrapper.sections()) {
-                Section section = sectionClass.getAnnotation(Section.class);
-                SectionBean sectionBean = new SectionBean(section);
-                for (Method method : sectionClass.getMethods()) {
-                    if (method.isAnnotationPresent(Field.class)) {
+            List<Class<?>> bootstrapperSections = PortalBootstrapperRegistry.getSections(bootstrapperClass);
+            if (bootstrapperSections != null) {
+                for (Class<?> sectionClass : bootstrapperSections) {
+                    Section section = sectionClass.getAnnotation(Section.class);
+                    SectionBean sectionBean = new SectionBean(section);
+                    for (Method method : PortalBootstrapperRegistry.getSectionFields(sectionClass)) {
                         Field field = method.getAnnotation(Field.class);
                         sectionBean.addField(new FieldBean(field));
                     }
+                    bootstrapperBean.addSection(sectionBean);
                 }
-                bootstrapperBean.addSection(sectionBean);
             }
-            bootstrapperBeans.add(bootstrapperBean);
+            if (!bootstrapperBean.getSections().isEmpty()) {
+                bootstrapperBeans.add(bootstrapperBean);
+            }
         }
         return bootstrapperBeans;
     }
 
+//    private List<BootstrapperBean> createBootstrapperBeans() {
+//        List<BootstrapperBean> bootstrapperBeans = Lists.newArrayList();
+//        Map<Class<?>, List<Class<?>>> pickedSections = chooseSections(PortalBootstrapperRegistry.getBootstrappers());
+//        for (Class<?> bootstrapperClass : pickedSections.keySet()) {
+//            Bootstrapper bootstrapper = bootstrapperClass.getAnnotation(Bootstrapper.class);
+//            BootstrapperBean bootstrapperBean = new BootstrapperBean(bootstrapper);
+//            for (Class<?> sectionClass : pickedSections.get(bootstrapperClass)) {
+//                Section section = sectionClass.getAnnotation(Section.class);
+//                SectionBean sectionBean = new SectionBean(section);
+//                for (Method method : PortalBootstrapperRegistry.getSectionFields(sectionClass)) {
+//                    Field field = method.getAnnotation(Field.class);
+//                    sectionBean.addField(new FieldBean(field));
+//                }
+//                bootstrapperBean.addSection(sectionBean);
+//            }
+//            bootstrapperBeans.add(bootstrapperBean);
+//        }
+//        return bootstrapperBeans;
+//    }
+//
+//    private Map<Class<?>, List<Class<?>>> chooseSections(List<Class<?>> bootstrappers) {
+//        Set<Class<?>> pickedSections = Sets.newHashSet();
+//        Map<Class<?>, List<Class<?>>> bootstrapperSections = Maps.newHashMap();
+//        for (Class<?> bootstrapperClass : bootstrappers) {
+//            for (Class<?> sectionClass : PortalBootstrapperRegistry.getSections(bootstrapperClass)) {
+//                if (!pickedSections.contains(sectionClass)) {
+//                    pickedSections.add(sectionClass);
+//                    if (!bootstrapperSections.containsKey(bootstrapperClass)) {
+//                        bootstrapperSections.put(bootstrapperClass, new ArrayList<Class<?>>());
+//                    }
+//                    bootstrapperSections.get(bootstrapperClass).add(sectionClass);
+//                }
+//            }
+//        }
+//        return bootstrapperSections;
+//    }
 }

@@ -17,4 +17,6 @@ public @interface Field {
     boolean isMandatory() default true;
 
     FieldType fieldType() default FieldType.TEXT;
+
+    int order();
 }
