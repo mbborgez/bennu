@@ -67,7 +67,7 @@ public class PortalContainerInitializer implements ServletContainerInitializer {
         for (Class<?> bootstrapParamerType : parameterTypes) {
             if (!ArrayUtils.contains(declaredSections, bootstrapParamerType)) {
                 throw new UnsupportedOperationException("The parameter '" + bootstrapParamerType.getName()
-                        + "' must be declared as a section on the @Bootstrapper annotation of class " + bootstrapper.getName());
+                        + "' must be declared as a section on the @Bootstrapper at " + bootstrapper.getName());
             }
         }
     }

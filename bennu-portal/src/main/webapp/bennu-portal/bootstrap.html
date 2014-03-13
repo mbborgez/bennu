@@ -8,9 +8,6 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular-animate.js" type="text/javascript"></script>
 
 	<script type="text/javascript" src="bennu-portal/js/jquery.min.js"></script>
-	<script type="text/javascript" src="bennu-portal/js/less.min.js"></script>
-	<script type="text/javascript" src="bennu-portal/js/twig.min.js"></script>
-	<script type="text/javascript" src="bennu-portal/portal.js"></script>
 	<script type="text/javascript" src="bennu-portal/bootstrap.js"></script>
 
 	<!-- Latest compiled and minified CSS -->
@@ -38,7 +35,7 @@
 							
 								<fieldset>
 									<legend>
-										<span class="badge">{{currentStepNumber + 1}}</span>
+										<span class="badge">{{currentSectionNumber + 1}}</span>
 										<strong>{{bootstrapper.name}}</strong> - {{section.name}}
 									</legend>
 									
@@ -76,8 +73,8 @@
 															ng-model="field.value"
 															ng-options="v for v in field.validValues">
 
-														<option ng-show="{{field.hint==null || field.hint.lenght==0}}" value="">   Choose One   </option>
-														<option ng-show="{{field.hint!=null && field.hint.lenght!=0}}" value="">   {{field.hint}}   </option>
+														<option ng-show="{{field.hint==null || field.hint.lenght==0}}" value="">Choose One</option>
+														<option ng-show="{{field.hint!=null && field.hint.lenght!=0}}" value="">{{field.hint}}</option>
 													</select>
 													
 													<div class="help-block" ng-show="field.hasError">{{error.message}}</div>
@@ -91,13 +88,13 @@
 								</fieldset>
 
 								<ul class="pager">
-									<li ng-class="{disabled: $first}" class="previous">
+									<li class="previous" ng-hide="$first && firstBootstrapper()">
 										<a ng-click="previousStep()">Previous</a>
 									</li>
-									<li ng-class="{disabled: $last}" class="next" ng-show="!$last">
+									<li class="next" ng-hide="$last && lastBootstrapper()">
 										<a ng-click="nextStep()">Next</a>
 									</li>
-									<li ng-class="{disabled: !$last}" class="next" ng-show="$last">
+									<li ng-class="{disabled: !$last}" class="next" ng-show="$last && lastBootstrapper()">
 										<a ng-click="submitWizard()" class="primary">Submit</a>
 									</li>
 								</ul>
@@ -107,6 +104,7 @@
 
 				</div>
 			</form>
+			
 		</div>
 	</div>
 </div>

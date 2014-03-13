@@ -24,62 +24,35 @@ function BootstrapCtrl($scope, $http) {
 			error(function(data, status, headers, config) {
 				$scope.error = data;
 				if(data instanceof Object) {
-					findField(data.fieldName).hasError = true;
-					$scope.currentStepNumber = findSectionNumber(data.fieldName);
+					showFieldError(data.fieldName, data);
 				}
 			});
 	};
 
 	function allFields() {
 		var fields = new Object();
-		$.each($scope.bootstrappers, function(bootstrapperIndex, bootstrapper){
-			$.each(bootstrapper.sections, function(sectionIndex, section){
-				$.each(section.fields, function(fieldIndex, field) {
-					fields[field.name] = field.value;
-				});
-			});
+		mapValues(function(bootstrapper, section, field){
+			fields[field.name] = field.value;			
 		});
 		return fields;
 	}
 
-	function findSectionNumber(fieldName) {
-		var result = 0;
-		$.each($scope.bootstrappers, function(bootstrapperIndex, bootstrapper) {
-			$.each(bootstrapper.sections, function(sectionIndex, section) {
-				$.each(section.fields, function(fieldIndex, field){
-					if(angular.equals(fieldName, field.name)) {
-						result = sectionIndex;
-					}
-				});
-			});
+	function showFieldError(fieldName, fieldError) {
+		mapIndex(function(bootstrapperIndex, sectionIndex, fieldIndex){
+			var field = $scope.bootstrappers[bootstrapperIndex].sections[sectionIndex].fields[fieldIndex];
+			if(angular.equals(fieldName, field.name)) {
+				$scope.currentBootstrapperNumber = bootstrapperIndex;
+				$scope.currentStepNumber = sectionIndex;
+				field.hasError = true;
+			}
 		});
-		return result;
-	}
-
-	function findField(fieldName) {
-		var result = null;
-		$.each($scope.bootstrappers, function(bootstrapperIndex, bootstrapper) {
-			$.each(bootstrapper.sections, function(sectionIndex, section) {
-				$.each(section.fields, function(fieldIndex, field){
-					if(angular.equals(fieldName, field.name)) {
-						result = field;
-					}
-				});
-			});
-		});
-		return result;
 	}
 
 	function clearErrors() {
-		$scope.error = null
-		$.each($scope.bootstrappers, function(bootstrapperIndex, bootstrapper) {
-			$.each(bootstrapper.sections, function(sectionIndex, section) {
-				$.each(section.fields, function(fieldIndex, field){
-					field.hasError = false;
-				});
-			});
+		$scope.error = null;
+		mapValues(function(bootstrapper, section, field){
+			field.hasError = false;
 		});
-		
 	}
 
 	$scope.hasAnyError = function() {
@@ -87,44 +60,70 @@ function BootstrapCtrl($scope, $http) {
 	}
 
 	$scope.hasError = function (section, field) {
-		return $scope.error != null && angular.equals($scope.error.sectionName, section.name) && angular.equals($scope.error.fieldName, field.name);
+		return $scope.error != null && 
+			angular.equals($scope.error.sectionName, section.name) && 
+			angular.equals($scope.error.fieldName, field.name);
 	}
 
 	$scope.hasSections = function() {
-		return selectedBootstrapper()!=null && selectedBootstrapper().sections!=null && selectedBootstrapper().sections.length!=0;
+		return $scope.bootstrappers[$scope.currentBootstrapperNumber]!=null && 
+			$scope.bootstrappers[$scope.currentBootstrapperNumber].sections!=null &&
+			$scope.bootstrappers[$scope.currentBootstrapperNumber].sections.length!=0;
 	};
 
 	$scope.getCurrentStep = function() {
-		return selectedBootstrapper().sections[$scope.currentStepNumber];
+		return $scope.bootstrappers[$scope.currentBootstrapperNumber].sections[$scope.currentStepNumber];
 	};
 
 	$scope.nextStep = function() {
-		if($scope.currentStepNumber < selectedBootstrapper().sections.length) {
+		if($scope.currentStepNumber < $scope.bootstrappers[$scope.currentBootstrapperNumber].sections.length-1) {
 			$scope.currentStepNumber++;
+		} else {
+			if($scope.currentBootstrapperNumber < $scope.bootstrappers.length-1) {
+				$scope.currentBootstrapperNumber++;
+				$scope.currentStepNumber = 0;
+			}
 		}
 	};
 
 	$scope.previousStep = function() {
 		if($scope.currentStepNumber > 0) {
 			$scope.currentStepNumber--;
+		} else {
+			if($scope.currentBootstrapperNumber > 0) {
+				$scope.currentBootstrapperNumber--;
+				$scope.currentStepNumber = $scope.bootstrappers[$scope.currentBootstrapperNumber].sections.length-1;
+			}
 		}
 	};
 
-	function selectedBootstrapper() {
-		return $scope.bootstrappers[$scope.currentBootstrapperNumber];
+	$scope.lastBootstrapper = function() {
+		return $scope.currentBootstrapperNumber == $scope.bootstrappers.length-1;
+	};
+	
+	$scope.firstBootstrapper = function() {
+		return $scope.currentBootstrapperNumber == 0;
+	};
+
+	function mapIndex(mappingFunction) {
+		$.each($scope.bootstrappers, function(bootstrapperIndex, bootstrapper){
+			$.each(bootstrapper.sections, function(sectionIndex, section){
+				$.each(section.fields, function(fieldIndex, field) {
+					mappingFunction(bootstrapperIndex, sectionIndex, fieldIndex);
+				});
+			});
+		});
 	}
 
-	$scope.nextBootstrapper = function() {
-		if($scope.currentBootstrapperNumber < selectedBootstrapper().length) {
-			$scope.currentBootstrapperNumber++;
-		}
-	};
-
-	$scope.previousBootstrapper = function() {
-		if($scope.currentBootstrapperNumber > 0) {
-			$scope.currentBootstrapperNumber--;
-		}
-	};
+	function mapValues(mappingFunction) {
+		$.each($scope.bootstrappers, function(bootstrapperIndex, bootstrapper){
+			$.each(bootstrapper.sections, function(sectionIndex, section){
+				$.each(section.fields, function(fieldIndex, field) {
+					mappingFunction(bootstrapper, section, field);
+				});
+			});
+		});
+	}
 };
 
 
