@@ -1,0 +1,32 @@
+.container {
+	margin-top: 10px;
+	padding-top: 10px;
+	padding-bottom: 5px;
+	background: rgba(245,245,245,0.88);
+	box-shadow: 0 0 2px #999;
+}
+.alert {
+	border: none;
+}
+
+fieldset {
+	border: 0px;
+}
+
+legend .badge {
+	margin-right: 7px;
+	vertical-align: middle;
+}
+
+input.ng-invalid.ng-dirty {
+  border: 1px solid #843534;
+}
+
+.error {
+	border: 1px solid #dca7a7;
+}
+
+.wizardSection.ng-hide-add, .wizardSection.ng-hide-remove {
+  transition:0.5s linear all;
+  display:block!important;
+}

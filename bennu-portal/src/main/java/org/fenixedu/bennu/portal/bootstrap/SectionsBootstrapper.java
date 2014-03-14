@@ -33,6 +33,9 @@ public class SectionsBootstrapper {
         try {
             method.invoke(null, args);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            if (e.getCause() != null && e.getCause() instanceof BootstrapException) {
+                throw (BootstrapException) e.getCause();
+            }
             throw new RuntimeException(e);
         }
     }

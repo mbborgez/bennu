@@ -1,67 +1,54 @@
-<html ng-app ng-controller="BootstrapCtrl">
+<html ng-app="bootstrapModule" ng-controller="BootstrapCtrl">
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<script type="text/javascript" src="bennu-portal/js/angular.min.js"></script>
 	<script type="text/javascript" src="bennu-portal/js/jquery.min.js"></script>
 	<script type="text/javascript" src="bennu-portal/js/bootstrap.js"></script>
-	<link rel="stylesheet" href="bennu-portal/css/bootstrap.min.css">
-	<title>{{bootstrapper.name}}</title>
+	<link rel="stylesheet" href="bennu-portal/css/bootstrap.min.css"></link>
+	<link rel="stylesheet" href="bennu-portal/css/bootstrapWizard.css"></link>
+	<title>Bootstrap</title>
 </head>
 <div class="container">
-	<h1>{{bootstrapper.name}}</h1>
 
-	<div name="bootstrapWizard">
+	<div>
 		<div ng-show="bootstrappers!=null" ng-repeat="bootstrapper in bootstrappers">
 
-			<form name="bootstrapForm" ng-submit="submitWizard()" novalidate class="form-horizontal" role="form">	
+			<form ng-submit="submitWizard()" novalidate class="form-horizontal" role="form">	
 				<div ng-repeat="section in bootstrapper.sections">
 
-					<ng-form name="{{section.name}}">
+					<ng-form>
 						<div class="wizardSection" ng-show="getCurrentStep() == section">
+								<h1>{{bootstrapper.name}}</h1>
 							
 								<fieldset>
-									<legend>
-										<span class="badge">{{currentSectionNumber + 1}}</span>
-										<strong>{{bootstrapper.name}}</strong> - {{section.name}}
-									</legend>
+									<legend><span class="badge">{{currentSectionNumber + 1}}</span>{{section.name}}</legend>
 									
-
 									<tt>{{section.description}}</tt>
 									
 									<br></br>
 
-									<div ng-hide="error==null || error.fieldName!=null" class="global-error">
-										{{error.message}}
-									</div>
+									<div ng-hide="error==null || error.fieldName!=null" class="global-error">{{error.message}}</div>
 
 									<div ng-repeat="field in section.fields" class="control-group">
 										
 										<div class="form-group">
 
-											<ng-form name="{{field.name}}" class="row" ng-class="{'has-error': field.hasError}">
+											<ng-form class="row" ng-class="{'has-error': field.hasError}">
 
 												<label for="input" class="col-sm-2 control-label">{{field.name}}:</label>
 												
 												<div class="col-sm-10">
-													<input name="input"
-															class="form-control"
-															type="{{field.fieldType}}"
-															placeholder="{{field.hint}}" 
-															ng-required="{{field.isMandatory}}"
-															ng-show="{{field.validValues.length == 0}}"
-															ng-model="field.value" />
+													<input name="input" class="form-control" type="{{field.fieldType}}" placeholder="{{field.hint}}" 
+														ng-required="{{field.isMandatory}}" ng-show="{{field.validValues.length == 0}}" 
+														ng-model="field.value" />
 
-													<select name="input"
-															class="form-control"
-															placeholder="{{field.hint}}" 
-															ng-required="{{field.isMandatory}}"
-															ng-show="{{field.validValues.length > 0}}"
-															ng-model="field.value"
-															ng-options="v for v in field.validValues">
-
+													<select name="input" class="form-control"  placeholder="{{field.hint}}" 
+														ng-required="{{field.isMandatory}}" ng-show="{{field.validValues.length > 0}}"
+														ng-model="field.value" ng-options="v for v in field.validValues">
+														
 														<option ng-show="{{field.hint==null || field.hint.lenght==0}}" value="">Choose One</option>
-														<option ng-show="{{field.hint!=null && field.hint.lenght!=0}}" value="">{{field.hint}}</option>
+													
 													</select>
 													
 													<div class="help-block" ng-show="field.hasError">{{error.message}}</div>
@@ -95,42 +82,5 @@
 		</div>
 	</div>
 </div>
-
-<style type="text/css">
-
-.container {
-	margin-top: 10px;
-	padding-top: 10px;
-	padding-bottom: 5px;
-	background: rgba(245,245,245,0.88);
-	box-shadow: 0 0 2px #999;
-}
-.alert {
-	border: none;
-}
-
-fieldset {
-	border: 0px;
-}
-
-legend .badge {
-	/*margin-right: 7px;*/
-	vertical-align: middle;
-}
-
-input.ng-invalid.ng-dirty {
-  border: 1px solid #843534;
-}
-
-.error {
-	border: 1px solid #dca7a7;
-}
-
-.wizardSection.ng-hide-add, .wizardSection.ng-hide-remove {
-  transition:0.5s linear all;
-  display:block!important;
-}
-
-</style>
 
 </html>
