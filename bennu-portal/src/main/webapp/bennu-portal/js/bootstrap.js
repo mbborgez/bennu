@@ -5,9 +5,16 @@ angular.module('bootstrapModule', [])
 	$scope.currentSectionNumber = 0;
 	$scope.currentBootstrapperNumber = 0;
 	$scope.error = null;
+	$scope.locale = null;
+	$scope.tempLocale = null;
+	$scope.availableLocales = null;
 	
 	$http.get('api/bennu-portal/bootstrap').success(function(data, status, headers, config) {
-		$scope.bootstrappers = data;
+		console.log(JSON.stringify(data));
+		$scope.bootstrappers = data.bootstrappers;
+		$scope.availableLocales = data.availableLocales;
+		//$scope.availableLocales = ['pt-PT', 'en-GB'];
+
 	});
 
 	$scope.submitWizard = function() {
@@ -24,6 +31,14 @@ angular.module('bootstrapModule', [])
 				}
 			});
 	};
+
+	$scope.submitInitialConfig = function() {
+		$scope.locale = $scope.tempLocale;
+	}
+
+	$scope.showInitialConfig = function() {
+		$scope.locale = null;
+	}
 
 	$scope.hasAnyError = function() {
 		return $scope.error != null;

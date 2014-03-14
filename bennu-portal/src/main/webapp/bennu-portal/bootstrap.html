@@ -12,23 +12,51 @@
 <div class="container">
 
 	<div>
-		<div ng-show="bootstrappers!=null" ng-repeat="bootstrapper in bootstrappers">
+		<div ng-show="locale==null">
+			<form>
+				<h1>Bootstrap</h1>
+				<fieldset>
+					<legend>Welcome<span class="badge">0</span></legend>
+					
+					<tt>Before you can bootstrap your application we need some info.</tt>
+					
+					<br></br>
+					
+					<label for="input" class="col-sm-2 control-label">Wizzard language:</label>
+					<div class="col-sm-10">
+						<select name="input" class="form-control" ng-required="{{field.isMandatory}}"
+							ng-model="tempLocale" ng-options="l.name for l in availableLocales">
+							<option value="">Choose One</option>
+						</select>
+					</div>
+				</fieldset>
+
+				<ul class="pager">
+					<li class="next">
+						<a ng-click="submitInitialConfig()">Next</a>
+					</li>
+				</ul>
+			</form>
+		</div>
+
+
+		<div ng-show="locale!=null" ng-repeat="bootstrapper in bootstrappers">
 
 			<form ng-submit="submitWizard()" novalidate class="form-horizontal" role="form">	
 				<div ng-repeat="section in bootstrapper.sections">
 
 					<ng-form>
 						<div class="wizardSection" ng-show="getCurrentStep() == section">
-								<h1>{{bootstrapper.name}}</h1>
+								<h1>{{bootstrapper.name[locale.key]}}</h1>
 							
 								<fieldset>
-									<legend><span class="badge">{{currentSectionNumber + 1}}</span>{{section.name}}</legend>
+									<legend>{{section.name[locale.key]}}<span class="badge">{{currentSectionNumber + 1}}</span></legend>
 									
-									<tt>{{section.description}}</tt>
+									<tt>{{section.description[locale.key]}}</tt>
 									
 									<br></br>
 
-									<div ng-hide="error==null || error.fieldName!=null" class="global-error">{{error.message}}</div>
+									<div ng-hide="error==null || error.fieldName!=null" class="global-error">{{error.message[locale.key]}}</div>
 
 									<div ng-repeat="field in section.fields" class="control-group">
 										
@@ -36,22 +64,20 @@
 
 											<ng-form class="row" ng-class="{'has-error': field.hasError}">
 
-												<label for="input" class="col-sm-2 control-label">{{field.name}}:</label>
-												
-												<div class="col-sm-10">
-													<input name="input" class="form-control" type="{{field.fieldType}}" placeholder="{{field.hint}}" 
+												<label for="input" class="col-sm-4 control-label">{{field.name[locale.key]}}:</label>
+
+												<div class="col-sm-5">
+													<input name="input" class="form-control" type="{{field.fieldType}}" placeholder="{{field.hint[locale.key]}}" 
 														ng-required="{{field.isMandatory}}" ng-show="{{field.validValues.length == 0}}" 
 														ng-model="field.value" />
 
-													<select name="input" class="form-control"  placeholder="{{field.hint}}" 
-														ng-required="{{field.isMandatory}}" ng-show="{{field.validValues.length > 0}}"
-														ng-model="field.value" ng-options="v for v in field.validValues">
+													<select name="input" class="form-control" ng-required="{{field.isMandatory}}" ng-show="{{field.validValues.length > 0}}" ng-model="field.value" ng-options="v for v in field.validValues">
 														
-														<option ng-show="{{field.hint==null || field.hint.lenght==0}}" value="">Choose One</option>
+														<option value="">Choose One</option>
 													
 													</select>
 													
-													<div class="help-block" ng-show="field.hasError">{{error.message}}</div>
+													<div class="help-block" ng-show="field.hasError">{{error.message[locale.key]}}</div>
 												</div>
 												
 											</ng-form>
@@ -62,6 +88,9 @@
 								</fieldset>
 
 								<ul class="pager">
+									<li class="previous" ng-show="$first && firstBootstrapper()">
+										<a ng-click="showInitialConfig()">Previous</a>
+									</li>
 									<li class="previous" ng-hide="$first && firstBootstrapper()">
 										<a ng-click="previousStep()">Previous</a>
 									</li>
