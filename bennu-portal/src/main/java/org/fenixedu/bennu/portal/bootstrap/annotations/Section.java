@@ -11,4 +11,6 @@ public @interface Section {
     String name();
 
     String description();
+
+    String bundle();
 }

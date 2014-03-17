@@ -17,4 +17,5 @@ public @interface Bootstrapper {
     Class<?>[] after() default {};
 
     String bundle();
+
 }

@@ -16,12 +16,13 @@ import javax.ws.rs.core.Response;
 
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 import org.fenixedu.bennu.core.util.CoreConfiguration;
+import org.fenixedu.bennu.portal.bootstrap.BootstrapError;
 import org.fenixedu.bennu.portal.bootstrap.PortalBootstrapperRegistry;
+import org.fenixedu.bennu.portal.bootstrap.SectionInvocationHandler;
 import org.fenixedu.bennu.portal.bootstrap.SectionsBootstrapper;
 import org.fenixedu.bennu.portal.bootstrap.annotations.Bootstrapper;
 import org.fenixedu.bennu.portal.bootstrap.annotations.Field;
 import org.fenixedu.bennu.portal.bootstrap.annotations.Section;
-import org.fenixedu.bennu.portal.bootstrap.beans.BootstrapException;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -35,17 +36,13 @@ public class BootstrapResource extends BennuRestResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(final String json) {
-        try {
-            JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
-            System.out.println(jsonObject);
-            SectionsBootstrapper.bootstrapAll(jsonObject);
+        System.out.println("#received: " + json);
+        JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
+        List<BootstrapError> errors = SectionsBootstrapper.bootstrapAll(jsonObject);
+        if (errors.isEmpty()) {
             return Response.status(200).build();
-        } catch (BootstrapException e) {
-            e.printStackTrace();
-            return Response.status(500).entity(e.toJson()).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(500).entity(new BootstrapException("Internal Error: " + e.getMessage()).toJson()).build();
+        } else {
+            return Response.status(500).entity(createErrors(errors).toString()).build();
         }
     }
 
@@ -56,6 +53,7 @@ public class BootstrapResource extends BennuRestResource {
             JsonObject json = new JsonObject();
             json.add("bootstrappers", getBootstrappers());
             json.add("availableLocales", getLocales());
+            json.add("defaultLocale", createLocale(SectionInvocationHandler.LOCALE));
             return json.toString();
         } catch (Exception e) {
             e.printStackTrace();
@@ -67,6 +65,17 @@ public class BootstrapResource extends BennuRestResource {
         JsonArray json = new JsonArray();
         for (Locale locale : CoreConfiguration.supportedLocales()) {
             json.add(createLocale(locale));
+        }
+        return json;
+    }
+
+    private JsonArray createErrors(List<BootstrapError> errors) {
+        JsonArray json = new JsonArray();
+        for (BootstrapError error : errors) {
+            JsonObject errorJson = new JsonObject();
+            errorJson.add("fieldName", getLocalizedString(error.getBundle(), error.getFieldName()).json());
+            errorJson.add("message", getLocalizedString(error.getBundle(), error.getMessage()).json());
+            json.add(errorJson);
         }
         return json;
     }
@@ -96,20 +105,20 @@ public class BootstrapResource extends BennuRestResource {
         json.add("description", getLocalizedString(bootstrapper.bundle(), bootstrapper.description()).json());
         if (bootstrapperSections != null) {
             for (Class<?> sectionClass : bootstrapperSections) {
-                sections.add(createSection(sectionClass.getAnnotation(Section.class), sectionClass, bootstrapper.bundle()));
+                sections.add(createSection(sectionClass.getAnnotation(Section.class), sectionClass));
             }
         }
         json.add("sections", sections);
         return json;
     }
 
-    private JsonElement createSection(Section section, Class<?> sectionClass, String bundle) {
+    private JsonElement createSection(Section section, Class<?> sectionClass) {
         JsonObject json = new JsonObject();
         JsonArray fields = new JsonArray();
-        json.add("name", getLocalizedString(bundle, section.name()).json());
-        json.add("description", getLocalizedString(bundle, section.description()).json());
+        json.add("name", getLocalizedString(section.bundle(), section.name()).json());
+        json.add("description", getLocalizedString(section.bundle(), section.description()).json());
         for (Method method : PortalBootstrapperRegistry.getSectionFields(sectionClass)) {
-            fields.add(createField(method.getAnnotation(Field.class), bundle));
+            fields.add(createField(method.getAnnotation(Field.class), section.bundle()));
         }
         json.add("fields", fields);
         return json;

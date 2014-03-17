@@ -21,11 +21,6 @@ public class PortalBootstrapperRegistry {
     private static Map<Class<?>, List<Class<?>>> bootstrapperSections = Maps.newConcurrentMap();
     private static Map<Class<?>, List<Method>> sectionFields = Maps.newConcurrentMap();
 
-    /***********************************************************************************
-     * 
-     * Register Operations
-     * 
-     **********************************************************************************/
     public static void registerBootstrapMethod(Class<?> bootstrapper, Method bootstrapMethod) {
         if (!bootstrapperMethods.containsKey(bootstrapper)) {
             bootstrapperMethods.put(bootstrapper, new ArrayList<Method>());
@@ -99,12 +94,6 @@ public class PortalBootstrapperRegistry {
         }
         return expandedList;
     }
-
-    /***************************************************************************************
-     * 
-     * Comparators
-     * 
-     ***************************************************************************************/
 
     private static final Comparator<Method> FIELDS_COMPARATOR = new Comparator<Method>() {
         @Override

@@ -4,17 +4,16 @@ angular.module('bootstrapModule', [])
 	$scope.bootstrappers = null;
 	$scope.currentSectionNumber = 0;
 	$scope.currentBootstrapperNumber = 0;
-	$scope.error = null;
+	$scope.errors = null;
 	$scope.locale = null;
 	$scope.tempLocale = null;
 	$scope.availableLocales = null;
+	$scope.defaultLocale = null;
 	
 	$http.get('api/bennu-portal/bootstrap').success(function(data, status, headers, config) {
-		console.log(JSON.stringify(data));
 		$scope.bootstrappers = data.bootstrappers;
 		$scope.availableLocales = data.availableLocales;
-		//$scope.availableLocales = ['pt-PT', 'en-GB'];
-
+		$scope.defaultLocale = data.defaultLocale;
 	});
 
 	$scope.submitWizard = function() {
@@ -22,15 +21,26 @@ angular.module('bootstrapModule', [])
 		
 		$http.post('api/bennu-portal/bootstrap', allFields()).
 			success(function(data, status, headers, config) {
-				console.log("success");
+				console.log("#sent: " + JSON.stringify(data));
+				window.location.reload(false);
 			}).
 			error(function(data, status, headers, config) {
-				$scope.error = data;
-				if(data instanceof Object) {
-					showFieldError(data.fieldName, data);
-				}
+				console.log("#ERROR: ", data);
+				showErrors(data);
 			});
 	};
+
+	function showErrors(errors) {
+		$scope.errors = [];
+
+		$.each(errors, function(errorIndex, error) {
+			if(error.fieldName!=null) {
+				showFieldError(error.fieldName, error);
+			} else {
+				$scope.errors.push(error);
+			}
+		});
+	}
 
 	$scope.submitInitialConfig = function() {
 		$scope.locale = $scope.tempLocale;
@@ -42,12 +52,6 @@ angular.module('bootstrapModule', [])
 
 	$scope.hasAnyError = function() {
 		return $scope.error != null;
-	}
-
-	$scope.hasError = function (section, field) {
-		return $scope.error != null && 
-			angular.equals($scope.error.sectionName, section.name) && 
-			angular.equals($scope.error.fieldName, field.name);
 	}
 
 	$scope.hasSections = function() {
@@ -113,18 +117,21 @@ angular.module('bootstrapModule', [])
 	function allFields() {
 		var fields = new Object();
 		mapValues(function(bootstrapper, section, field){
-			fields[field.name] = field.value;			
+			if(typeof field.value == "undefined") field.value = "";
+			fields[field.name[$scope.defaultLocale.key]] = field.value;
 		});
+		console.log("allfields: ", fields);
 		return fields;
 	}
 
 	function showFieldError(fieldName, fieldError) {
 		mapIndex(function(bootstrapperIndex, sectionIndex, fieldIndex){
 			var field = $scope.bootstrappers[bootstrapperIndex].sections[sectionIndex].fields[fieldIndex];
-			if(angular.equals(fieldName, field.name)) {
+			if(angular.equals(fieldName[$scope.defaultLocale.key], field.name[$scope.defaultLocale.key])) {
 				$scope.currentBootstrapperNumber = bootstrapperIndex;
 				$scope.currentSectionNumber = sectionIndex;
 				field.hasError = true;
+				field.error = fieldError;
 			}
 		});
 	}

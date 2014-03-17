@@ -55,8 +55,10 @@
 									<tt>{{section.description[locale.key]}}</tt>
 									
 									<br></br>
-
-									<div ng-hide="error==null || error.fieldName!=null" class="global-error">{{error.message[locale.key]}}</div>
+									
+									<div ng-hide="errors==null || errors.length==0" ng-repeat)"error in errors">
+										<div ng-hide="error.fieldName!=null" class="global-error">{{error.message[locale.key]}}</div>
+									</div>
 
 									<div ng-repeat="field in section.fields" class="control-group">
 										
@@ -64,20 +66,22 @@
 
 											<ng-form class="row" ng-class="{'has-error': field.hasError}">
 
-												<label for="input" class="col-sm-4 control-label">{{field.name[locale.key]}}:</label>
+												<label for="input" class="col-sm-2 control-label">{{field.name[locale.key]}}:</label>
 
-												<div class="col-sm-5">
-													<input name="input" class="form-control" type="{{field.fieldType}}" placeholder="{{field.hint[locale.key]}}" 
-														ng-required="{{field.isMandatory}}" ng-show="{{field.validValues.length == 0}}" 
-														ng-model="field.value" />
+												<div class="col-sm-9">
+													<input name="input" class="form-control" type="{{field.fieldType}}" 
+														placeholder="{{field.hint[locale.key]}}" ng-required="{{field.isMandatory}}" 
+														ng-show="{{field.validValues.length == 0}}" ng-model="field.value" />
 
-													<select name="input" class="form-control" ng-required="{{field.isMandatory}}" ng-show="{{field.validValues.length > 0}}" ng-model="field.value" ng-options="v for v in field.validValues">
+													<select name="input" class="form-control" ng-required="{{field.isMandatory}}" 
+														ng-show="{{field.validValues.length > 0}}" ng-model="field.value" 
+														ng-options="v for v in field.validValues">
 														
 														<option value="">Choose One</option>
 													
 													</select>
 													
-													<div class="help-block" ng-show="field.hasError">{{error.message[locale.key]}}</div>
+													<div class="help-block" ng-show="field.hasError">{{field.error.message[locale.key]}}</div>
 												</div>
 												
 											</ng-form>
