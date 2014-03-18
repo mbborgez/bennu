@@ -82,7 +82,7 @@ public class BootstrapResource extends BennuRestResource {
 
     private JsonObject createLocale(Locale locale) {
         JsonObject localeJson = new JsonObject();
-        localeJson.addProperty("name", locale.getDisplayName());
+        localeJson.addProperty("name", locale.getDisplayName(Locale.ENGLISH));
         String key = String.format("%s-%s", locale.getLanguage(), locale.getCountry());
         localeJson.addProperty("key", key);
         return localeJson;
