@@ -61,15 +61,6 @@ public class BennuPortalDispatcher implements Filter {
         String path = trim(request.getRequestURI());
         MenuFunctionality functionality = selectFunctionality(path);
 
-        if (PortalConfiguration.getInstance().getMenu().getChildSet().isEmpty()) {
-            if (path.endsWith(".js") || path.endsWith(".css") || path.startsWith("api/")) {
-                chain.doFilter(request, response);
-            } else {
-                request.getRequestDispatcher("/bennu-portal/bootstrap.html").forward(request, response);
-            }
-            return;
-        }
-
         if (functionality != null) {
             request.setAttribute(SELECTED_FUNCTIONALITY, functionality);
             PortalBackendRegistry.getPortalBackend(functionality.getProvider()).getSemanticURLHandler()
